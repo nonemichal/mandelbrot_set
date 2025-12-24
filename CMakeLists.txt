@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(FetchContent)
-
 # raylib
 set(BUILD_EXAMPLES
     OFF
@@ -22,30 +20,19 @@ set(BUILD_TESTING
 set(BUILD_SHARED_LIBS
     OFF
     CACHE BOOL "" FORCE)
-FetchContent_Declare(
-  raylib
-  GIT_REPOSITORY https://github.com/raysan5/raylib.git
-  GIT_TAG 5.5)
+add_subdirectory(external/raylib)
 
 # raylib-cpp
-FetchContent_Declare(
-  raylib_cpp
-  GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
-  GIT_TAG v5.5.0)
+add_subdirectory(external/raylib-cpp)
 
 # toml11
-FetchContent_Declare(
-  toml11
-  GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
-  GIT_TAG v4.4.0)
+add_subdirectory(external/toml11)
 
-# Fetch all
-FetchContent_MakeAvailable(raylib raylib_cpp toml11)
-
+# Executable
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib raylib_cpp toml11::toml11)
 
+# Warnings
 set(COMPILE_FLAGS -Wall -Wextra -Wpedantic)
-
 target_compile_options(${PROJECT_NAME} PRIVATE ${COMPILE_FLAGS})
