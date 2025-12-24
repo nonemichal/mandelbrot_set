@@ -2,27 +2,27 @@
 CompileFlags:
   Add: [-std=gnu++23]
 
-# Configure diagnostics
 Diagnostics:
-  UnusedIncludes: None         # Disable warnings about unused includes
-  MissingIncludes: None        # Disable warnings about missing includes
+  # Disable warnings about unused includes
+  UnusedIncludes: None
+  # Disable warnings about missing includes
+  MissingIncludes: None
 
-# Clang-Tidy configuration
-ClangTidy:
-  Checks: >
-    clang-analyzer-*,          # Enable static analyzer checks
-    cppcoreguidelines-*,       # Enable C++ Core Guidelines checks
-    modernize-*,               # Enable modern C++ usage checks
-    performance-*,             # Enable performance-related checks
-    readability-*,             # Enable readability improvements
-    -llvm-include-order        # Disable warnings about include order
-
-  WarningsAsErrors: ""         # Do not treat warnings as errors
-  HeaderFilterRegex: ".*"      # Apply checks to all header files
-  FormatStyle: file            # Use .clang-format for formatting
-
-  CheckOptions:
-    - key: readability-identifier-naming.VariableCase
-      value: lower_case        # Force variable names to lower_case
-    - key: readability-identifier-naming.FunctionCase
-      value: CamelCase         # Force function names to CamelCase
+  # Configure clang-tidy
+  ClangTidy:
+    # Static analyzer checks
+    # C++ core guidelines checks
+    # Modern C++ usage checks
+    # Performance-related checks
+    # Readability improvements
+    Add:
+      - clang-analyzer-*
+      - cppcoreguidelines-*
+      - modernize-*
+      - performance-*
+      - readability-*
+    CheckOptions:
+      # Variables in lower case
+      readability-identifier-naming.VariableCase: lower_case
+      # Functions in camel case
+      readability-identifier-naming.FunctionCase: CamelCase
