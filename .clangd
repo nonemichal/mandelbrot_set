@@ -10,19 +10,26 @@ Diagnostics:
 
   # Configure clang-tidy
   ClangTidy:
-    # Static analyzer checks
-    # C++ core guidelines checks
-    # Modern C++ usage checks
-    # Performance-related checks
-    # Readability improvements
     Add:
+      # Static analyzer checks
       - clang-analyzer-*
+      # C++ core guidelines checks
       - cppcoreguidelines-*
+      # Modern C++ usage checks
       - modernize-*
+      # Performance-related checks
       - performance-*
+      # Readability improvements
       - readability-*
+
+    Remove:
+      # Trailing return types (for deleted/defaulted operators)
+      - modernize-use-trailing-return-type
+
     CheckOptions:
       # Variables in lower case
       readability-identifier-naming.VariableCase: lower_case
+      # Global constants in upper case
+      readability-identifier-naming.GlobalConstantCase: UPPER_CASE
       # Functions in camel case
       readability-identifier-naming.FunctionCase: CamelCase
