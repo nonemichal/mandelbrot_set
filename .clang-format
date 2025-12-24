@@ -1,0 +1,5 @@
+BasedOnStyle: LLVM      # Start from LLVM coding style
+IndentWidth: 4          # Indentation uses 4 spaces
+TabWidth: 4             # Tab character width is 4 spaces
+UseTab: Never           # Always use spaces, never tabs
+ColumnLimit: 80         # Maximum line length is 80 characters
