@@ -37,14 +37,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE raylib raylib_cpp toml11::toml11)
 
 # Define PROJECT_ROOT_DIR macro
 target_compile_definitions(${PROJECT_NAME}
-                           PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
+                           PRIVATE PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}")
 
 # Warnings
-set(COMPILE_FLAGS
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wconversion
-    -Wsign-conversion
-    -Wno-deprecated-literal-operator)
+set(COMPILE_FLAGS -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
+                  -Wno-deprecated-literal-operator)
 target_compile_options(${PROJECT_NAME} PRIVATE ${COMPILE_FLAGS})

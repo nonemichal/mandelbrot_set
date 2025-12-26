@@ -25,6 +25,8 @@ Diagnostics:
     Remove:
       # Trailing return types (for deleted/defaulted operators)
       - modernize-use-trailing-return-type
+      # Disable warnings about C-style varargs
+      - cppcoreguidelines-pro-type-vararg
 
     CheckOptions:
       # Variables in lower case

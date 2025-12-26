@@ -1,21 +1,36 @@
 #pragma once
 
+#include <string_view>
+
 #include "raylib-cpp.hpp"
 
+#include "config.hpp"
 #include "drawing_scope.hpp"
 
 // Class to run the app
 class App {
   public:
-    App(int width, int height, const std::string &title)
-        : window_(width, height, title) {}
+    explicit App(const Config &config, std::string_view title)
+        : window_(config.GetWindowValue(Config::WindowOption::Width),
+                  config.GetWindowValue(Config::WindowOption::Height),
+                  title.data()),
+          fps(config.GetWindowValue(Config::WindowOption::Fps)) {}
+    ~App() = default;
 
-    void Run(int fps) {
+    // Delete copy operations
+    App(const App &) = delete;
+    App &operator=(const App &) = delete;
+
+    // Delete move operations
+    App(App &&) = delete;
+    App &operator=(App &&) = delete;
+
+    void Run() {
         window_.SetTargetFPS(fps);
 
         // Main loop
-        // Detect window close button or ESC key
-        while (!window_.ShouldClose()) {
+        while (
+            !window_.ShouldClose()) {  // Detect window close button or ESC key
             // Update
 
             // Draw
@@ -28,4 +43,5 @@ class App {
 
   private:
     raylib::Window window_;
+    int fps;
 };

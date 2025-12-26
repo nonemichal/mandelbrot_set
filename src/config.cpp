@@ -7,6 +7,8 @@
 #include <string>
 #include <string_view>
 
+#include "raylib-cpp.hpp"
+
 #include "toml.hpp"
 
 // Loads the configuration file and returns a Config object
@@ -40,6 +42,8 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
                 std::format("Missing window config option: {}", option_name));
         }
         config.window_config_.at(i) = *find_val;
+        TraceLog(LOG_INFO, "MANDELBROT_SET: Setting %s %s -> %d", table_name,
+                 option_name, *find_val);
     }
 
     // Shaders table section
@@ -55,29 +59,31 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
                 std::format("Missing shader config option: {}", option_name));
         }
         config.shader_config_.at(i) = *find_val;
+        TraceLog(LOG_INFO, "MANDELBROT_SET: Setting %s %s -> %s", table_name,
+                 option_name, find_val->c_str());
     }
 
     return config;
 }
 
-// Get window config value
-std::expected<int, std::string>
-Config::GetWindowValue(WindowOption option) const {
-    auto index = static_cast<size_t>(option);
-    if (index >= WINDOW_OPTIONS_COUNT) {
-        return std::unexpected("Invalid window config option");
-    }
-
-    return window_config_.at(index);
+// NOTE: Assumes the caller uses a valid option and
+// does not attempt to access Count_
+int Config::GetWindowValue(WindowOption option) const {
+    const auto index = static_cast<size_t>(option);
+    assert(index < window_config_.size());
+    const auto value = window_config_.at(index);
+    TraceLog(LOG_DEBUG, "MANDELBROT_SET: Getting window %s -> %d",
+             WINDOW_OPTIONS_STR.at(index).data(), value);
+    return value;
 }
 
-// Get shader config value
-std::expected<std::string_view, std::string>
-Config::GetShaderValue(ShaderOption option) const {
-    auto index = static_cast<size_t>(option);
-    if (index >= SHADER_OPTIONS_COUNT) {
-        return std::unexpected("Invalid shader config option");
-    }
-
-    return shader_config_.at(index);
+// NOTE: Assumes the caller uses a valid option and
+// does not attempt to access Count_
+std::string_view Config::GetShaderValue(ShaderOption option) const {
+    const auto index = static_cast<size_t>(option);
+    assert(index < shader_config_.size());
+    const auto &value = shader_config_.at(index);
+    TraceLog(LOG_DEBUG, "MANDELBROT_SET: Getting shader %s -> %s",
+             SHADER_OPTIONS_STR.at(index).data(), value.c_str());
+    return value;
 }

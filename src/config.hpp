@@ -10,6 +10,7 @@
 class Config {
   public:
     // Enums for config options
+    // NOTE: Do not use Count_ to access elements
     enum class WindowOption : std::uint8_t { Width, Height, Fps, Count_ };
     enum class ShaderOption : std::uint8_t { Vertex, Fragment, Count_ };
 
@@ -37,17 +38,11 @@ class Config {
                   "SHADER_OPTIONS_STR size must exactly match the number of "
                   "ShaderOption enum values");
 
-    // Loads the configuration file and returns a Config object
     [[nodiscard]] static std::expected<Config, std::string>
     Load(std::string_view config_path);
 
-    // Get window config value
-    [[nodiscard]] std::expected<int, std::string>
-    GetWindowValue(WindowOption option) const;
-
-    // Get shader config value
-    [[nodiscard]] std::expected<std::string_view, std::string>
-    GetShaderValue(ShaderOption option) const;
+    [[nodiscard]] int GetWindowValue(WindowOption option) const;
+    [[nodiscard]] std::string_view GetShaderValue(ShaderOption option) const;
 
   private:
     Config() = default;
