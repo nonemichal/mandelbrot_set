@@ -29,9 +29,14 @@ add_subdirectory(external/raylib-cpp)
 add_subdirectory(external/toml11)
 
 # Executable
-add_executable(${PROJECT_NAME} src/main.cpp)
+set(SOURCE_FILES src/main.cpp src/config.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+# Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib raylib_cpp toml11::toml11)
+
+# Define PROJECT_ROOT_DIR macro
+target_compile_definitions(app PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 # Warnings
 set(COMPILE_FLAGS -Wall -Wextra -Wpedantic)
