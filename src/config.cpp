@@ -24,7 +24,7 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
     // Get config file root
     const auto &root = parse_result.unwrap();
 
-    // Create empty config
+    // Initialize an empty Config object
     Config config{};
 
     // Window table section
@@ -35,7 +35,7 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
         const auto find_val =
             toml::find<std::optional<int>>(root, table_name, option_name);
         if (!find_val.has_value()) {
-            // If value not found return error
+            // Return an error if the option is missing
             return std::unexpected(
                 std::format("Missing window config option: {}", option_name));
         }
@@ -50,7 +50,7 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
         const auto find_val = toml::find<std::optional<std::string>>(
             root, table_name, option_name);
         if (!find_val.has_value()) {
-            // If value not found return error
+            // Return an error if the option is missing
             return std::unexpected(
                 std::format("Missing shader config option: {}", option_name));
         }

@@ -3,7 +3,7 @@
 #include "raylib-cpp.hpp"
 
 // Class using RAII to determine drawing scope
-// It has to be used whenever you want to draw something on the window
+// It has to be used whenever something on the window will be drawn
 class DrawingScope {
   public:
     explicit DrawingScope(raylib::Window &window) : window_(window) {
