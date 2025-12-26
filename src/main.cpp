@@ -8,9 +8,9 @@
 #include "app.hpp"
 #include "config.hpp"
 
-#define CONFIG_FILE "/config.toml"
+#define CONFIG_FILE "config.toml"
 #define CONFIG_PATH                                                            \
-    PROJECT_ROOT_PATH CONFIG_FILE  // PROJECT_ROOT_PATH is defined in cmake
+    PROJECT_ROOT_PATH "/" CONFIG_FILE  // PROJECT_ROOT_PATH is defined in cmake
 #define TITLE "Mandelbrot Set"
 
 constexpr std::string_view CONFIG_PATH_SV{CONFIG_PATH};

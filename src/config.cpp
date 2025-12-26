@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "raylib-cpp.hpp"
-
 #include "toml.hpp"
 
 // Loads the configuration file and returns a Config object

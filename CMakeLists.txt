@@ -29,7 +29,7 @@ add_subdirectory(external/raylib-cpp)
 add_subdirectory(external/toml11)
 
 # Executable
-set(SOURCE_FILES src/main.cpp src/config.cpp)
+set(SOURCE_FILES src/main.cpp src/app.cpp src/config.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Link libraries

@@ -5,4 +5,4 @@ fps = 60
 
 [shaders]
 vertex = ""
-fragment = "shaders/mandelbrot_set.fs"
+fragment = "shaders/mandelbrot_set.frag"

@@ -26,8 +26,10 @@ IncludeCategories:
   # System and standard library headers
   - Regex: "^<.*>"
     Priority: 1
-  # raylib and related third-party headers
+  # raylib and toml headers
   - Regex: '^"raylib.*"'
+    Priority: 2
+  - Regex: '^"toml.*"'
     Priority: 2
   # Project-local headers
   - Regex: '^".*"'

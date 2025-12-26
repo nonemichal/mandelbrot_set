@@ -5,16 +5,11 @@
 #include "raylib-cpp.hpp"
 
 #include "config.hpp"
-#include "drawing_scope.hpp"
 
 // Class to run the app
 class App {
   public:
-    explicit App(const Config &config, std::string_view title)
-        : window_(config.GetWindowValue(Config::WindowOption::Width),
-                  config.GetWindowValue(Config::WindowOption::Height),
-                  title.data()),
-          fps(config.GetWindowValue(Config::WindowOption::Fps)) {}
+    explicit App(const Config &config, std::string_view title);
     ~App() = default;
 
     // Delete copy operations
@@ -25,23 +20,13 @@ class App {
     App(App &&) = delete;
     App &operator=(App &&) = delete;
 
-    void Run() {
-        window_.SetTargetFPS(fps);
-
-        // Main loop
-        while (
-            !window_.ShouldClose()) {  // Detect window close button or ESC key
-            // Update
-
-            // Draw
-            {
-                DrawingScope drawing_scope(window_);
-                window_.ClearBackground(RAYWHITE);
-            }
-        }
-    }
+    void Run();
 
   private:
     raylib::Window window_;
-    int fps;
+    int fps_;
+    struct {
+        std::string_view vertex;
+        std::string_view fragment;
+    } shaders_;
 };
