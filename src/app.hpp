@@ -20,13 +20,16 @@ class App {
     App(App &&) = delete;
     App &operator=(App &&) = delete;
 
+    // Project root path
+    static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
+
     void Run();
 
   private:
     raylib::Window window_;
     int fps_;
     struct {
-        std::string_view vertex;
-        std::string_view fragment;
+        std::string_view vertex_file_name_;
+        std::string_view fragment_file_name_;
     } shaders_;
 };

@@ -14,6 +14,7 @@
 #define TITLE "Mandelbrot Set"
 
 constexpr std::string_view CONFIG_PATH_SV{CONFIG_PATH};
+constexpr std::string_view TITLE_SV{TITLE};
 
 int main() {
     // Load the config
@@ -30,7 +31,7 @@ int main() {
     const auto &config = config_result.value();
 
     // App initialization
-    App app(config, TITLE);
+    App app(config, TITLE_SV);
 
     // Run the app
     app.Run();
