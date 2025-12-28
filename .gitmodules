@@ -1,15 +1,15 @@
 [submodule "external/raylib"]
 	path = external/raylib
 	url = https://github.com/raysan5/raylib.git
-    branch = 5.5
+	branch = 5.5
 [submodule "external/raylib-cpp"]
 	path = external/raylib-cpp
 	url = https://github.com/RobLoach/raylib-cpp.git
-    branch = v5.5.0
+	branch = v5.5.0
 [submodule "external/toml11"]
 	path = external/toml11
 	url = https://github.com/ToruNiina/toml11.git
-    branch = v4.4.0
+	branch = v4.4.0
 [submodule "external/doctest"]
 	path = external/doctest
 	url = https://github.com/doctest/doctest.git
