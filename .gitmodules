@@ -1,12 +1,16 @@
 [submodule "external/raylib"]
 	path = external/raylib
 	url = https://github.com/raysan5/raylib.git
+    branch = 5.5
 [submodule "external/raylib-cpp"]
 	path = external/raylib-cpp
 	url = https://github.com/RobLoach/raylib-cpp.git
+    branch = v5.5.0
 [submodule "external/toml11"]
 	path = external/toml11
 	url = https://github.com/ToruNiina/toml11.git
-[submodule "external/Catch2"]
-	path = external/Catch2
-	url = https://github.com/catchorg/Catch2.git
+    branch = v4.4.0
+[submodule "external/doctest"]
+	path = external/doctest
+	url = https://github.com/doctest/doctest.git
+	branch = v2.4.12
