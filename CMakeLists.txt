@@ -18,5 +18,8 @@ add_subdirectory(external/toml11)
 add_subdirectory(src)
 
 # Tests
-enable_testing()
-add_subdirectory(tests)
+if(MANDELBROT_BUILD_TESTS)
+  include(CTest)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

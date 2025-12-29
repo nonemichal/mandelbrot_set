@@ -7,7 +7,7 @@ set(BUILD_GAMES
     CACHE BOOL "Disable raylib building games" FORCE)
 set(BUILD_TESTING
     OFF
-    CACHE BOOL "Disable raylib building tests in dependencies" FORCE)
+    CACHE BOOL "Disable raylib building tests" FORCE)
 set(BUILD_SHARED_LIBS
     OFF
-    CACHE BOOL "Build raylib static libraries only" FORCE)
+    CACHE BOOL "Build raylib as a static library" FORCE)
