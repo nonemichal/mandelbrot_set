@@ -1,42 +1,56 @@
 #include "app.hpp"
 
-#include <format>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 
+#include "Window.hpp"
 #include "config.hpp"
 #include "drawing_scope.hpp"
 
-// Class to run the app
-App::App(const Config &config, std::string_view title)
-    : window_(config.GetWindowValue(Config::WindowOption::Width),
+std::expected<App *, std::string> App::New(const std::string &title,
+                                           std::string_view config_path) {
+    // Singleton pattern
+    static bool initialized = false;
+    if (initialized) {
+        return std::unexpected("The only one app instance already exists");
+    }
+
+    // Load the config file
+    TraceLog(LOG_INFO, "MANDELBROT_SET: Loading config file -> %s",
+             config_path.data());
+    auto config_result = Config::Load(config_path);
+
+    // If parsing did not succeed
+    if (!config_result) {
+        const auto *error_msg = config_result.error().c_str();
+        return std::unexpected(error_msg);
+    }
+
+    // Parsing succeeded
+    TraceLog(LOG_INFO, "MANDELBROT_SET: Config file loaded correctly");
+    auto &config = config_result.value();
+
+    // Create and initialize the app instance
+    static App instance{title, config};
+    initialized = true;
+
+    return &instance;
+}
+
+App::App(const std::string &title, const Config &config)
+    : fps_(config.GetWindowValue(Config::WindowOption::Fps)),
+      window_(config.GetWindowValue(Config::WindowOption::Width),
               config.GetWindowValue(Config::WindowOption::Height),
-              title.data()),
-      fps_(config.GetWindowValue(Config::WindowOption::Fps)),
-      shaders_{.vertex_file_name_ =
-                   config.GetShaderValue(Config::ShaderOption::Vertex),
-               .fragment_file_name_ =
-                   config.GetShaderValue(Config::ShaderOption::Fragment)} {}
+              title),  // NOTE: Raylib window requires title as string
+      shader_(config.GetShaderPath(Config::ShaderType::Vertex),
+              config.GetShaderPath(Config::ShaderType::Fragment)) {
+    // Set FPS
+    window_.SetTargetFPS(fps_);
+}
 
 void App::Run() {
-    window_.SetTargetFPS(fps_);
-
-    // Construct shader paths
-    // NOTE: Passing an empty string to Shader means "no shader" for that stage
-    const std::string vertex_path =
-        shaders_.vertex_file_name_.empty()
-            ? std::string{}
-            : std::format("{}/{}", ROOT_SV, shaders_.vertex_file_name_);
-    const std::string fragment_path =
-        shaders_.fragment_file_name_.empty()
-            ? std::string{}
-            : std::format("{}/{}", ROOT_SV, shaders_.fragment_file_name_);
-
-    // Initialize shaders
-    raylib::Shader shader(vertex_path, fragment_path);
-
     float delta_red = 0.002;
     float delta_green = 0.005;
     float delta_blue = 0.007;
@@ -58,20 +72,20 @@ void App::Run() {
             (blue >= 1 || blue <= 0) ? (delta_blue * (-1)) : delta_blue;
 
         Vector3 color{red, green, blue};
-        shader.SetValue(shader.GetLocation("u_color"), &color,
-                        SHADER_UNIFORM_VEC3);
+        shader_.SetValue(shader_.GetLocation("u_color"), &color,
+                         SHADER_UNIFORM_VEC3);
 
         // Draw
         {
             DrawingScope drawing_scope(window_);
             window_.ClearBackground(RAYWHITE);
 
-            shader.BeginMode();
+            shader_.BeginMode();
 
             DrawRectangle(0, 0, window_.GetWidth(), window_.GetHeight(),
                           RAYWHITE);
 
-            shader.EndMode();
+            shader_.EndMode();
         }
     }
 }

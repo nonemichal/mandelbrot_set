@@ -1,8 +1,8 @@
-[window]
+[window] # Int values
 width = 1280
 height = 720
 fps = 60
 
-[shaders]
+[shaders] # String (paths) values
 vertex = ""
 fragment = "shaders/mandelbrot_set.frag"

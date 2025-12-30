@@ -9,8 +9,9 @@
 // Class to run the app
 class App {
   public:
-    explicit App(const Config &config, std::string_view title);
-    ~App() = default;
+    // Returns the only one instance of the app
+    static std::expected<App *, std::string> New(const std::string &title,
+                                                 std::string_view config_path);
 
     // Delete copy operations
     App(const App &) = delete;
@@ -20,16 +21,20 @@ class App {
     App(App &&) = delete;
     App &operator=(App &&) = delete;
 
-    // Project root path
-    static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
+    // Getters
+    [[nodiscard]] const Config &GetConfig() const;
+    [[nodiscard]] int GetFps() const;
+    [[nodiscard]] const raylib::Window &GetWindow() const;
 
+    // Method to run the app
     void Run();
 
   private:
-    raylib::Window window_;
+    // Private constructor and destructor
+    explicit App(const std::string &title, const Config &config);
+    ~App() = default;
+
     int fps_;
-    struct {
-        std::string_view vertex_file_name_;
-        std::string_view fragment_file_name_;
-    } shaders_;
+    raylib::Window window_;
+    raylib::Shader shader_;
 };
