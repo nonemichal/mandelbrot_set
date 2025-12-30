@@ -11,7 +11,7 @@
 #include "mandelbrot_error.hpp"
 
 std::expected<App *, MandelbrotError> App::New(const std::string &title,
-                                               std::string_view config_path) {
+                                               std::string_view config_file) {
     // Singleton pattern
     static bool initialized = false;
     if (initialized) {
@@ -22,8 +22,8 @@ std::expected<App *, MandelbrotError> App::New(const std::string &title,
 
     // Load the config file
     TraceLog(LOG_INFO, "MANDELBROT_SET: Loading config file -> %s",
-             config_path.data());
-    auto config_result = Config::Load(config_path);
+             config_file.data());
+    auto config_result = Config::Load(config_file);
 
     // If parsing did not succeed
     if (!config_result) {

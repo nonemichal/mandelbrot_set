@@ -13,17 +13,21 @@
 
 // Loads the configuration file
 std::expected<Config, MandelbrotError>
-Config::Load(std::string_view config_path) {
+Config::Load(std::string_view config_file) {
+    // Create config path
+    const std::filesystem::path config_path =
+        std::filesystem::path(PROJECT_ROOT_PATH) / config_file;
+
     // Validate config path
     if (!std::filesystem::exists(config_path)) {
-        auto error_msg =
-            std::format("Config file does not exist -> {}", config_path);
+        auto error_msg = std::format("Config file does not exist -> {}",
+                                     config_path.string());
         return std::unexpected(
             MandelbrotError(MandelbrotError::Code::FileNotFound, error_msg));
     }
 
     // Parse config file
-    auto parse_result = toml::try_parse(config_path.data());
+    auto parse_result = toml::try_parse(config_path);
 
     // Check if parsing succeeded
     if (!parse_result.is_ok()) {

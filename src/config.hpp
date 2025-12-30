@@ -35,9 +35,12 @@ class Config {
     static constexpr std::array<std::string_view, SHADER_TYPES_COUNT>
         SHADER_TYPES_STR{"vertex", "fragment"};
 
+    // Project root path
+    static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
+
     // Loads the configuration file
     [[nodiscard]] static std::expected<Config, MandelbrotError>
-    Load(std::string_view config_path);
+    Load(std::string_view config_file);
 
     // Getters
     [[nodiscard]] int GetWindowValue(WindowOption option) const;
@@ -45,9 +48,6 @@ class Config {
     GetShaderPath(ShaderType type) const;
 
   private:
-    // Project root path
-    static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
-
     // Config values
     std::array<int, WINDOW_OPTIONS_COUNT> window_config_{};
     std::array<std::filesystem::path, SHADER_TYPES_COUNT> shader_paths_{};

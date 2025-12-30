@@ -12,7 +12,7 @@ class App {
   public:
     // Returns the only one instance of the app
     static std::expected<App *, MandelbrotError>
-    New(const std::string &title, std::string_view config_path);
+    New(const std::string &title, std::string_view config_file);
 
     // Delete copy operations
     App(const App &) = delete;
