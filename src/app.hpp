@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mandelbrot_error.hpp>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
@@ -10,8 +11,8 @@
 class App {
   public:
     // Returns the only one instance of the app
-    static std::expected<App *, std::string> New(const std::string &title,
-                                                 std::string_view config_path);
+    static std::expected<App *, MandelbrotError>
+    New(const std::string &title, std::string_view config_path);
 
     // Delete copy operations
     App(const App &) = delete;

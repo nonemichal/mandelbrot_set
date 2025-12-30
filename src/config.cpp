@@ -9,12 +9,17 @@
 #include "raylib-cpp.hpp"
 #include "toml.hpp"
 
+#include "mandelbrot_error.hpp"
+
 // Loads the configuration file
-std::expected<Config, std::string> Config::Load(std::string_view config_path) {
+std::expected<Config, MandelbrotError>
+Config::Load(std::string_view config_path) {
     // Validate config path
     if (!std::filesystem::exists(config_path)) {
+        auto error_msg =
+            std::format("Config file does not exist -> {}", config_path);
         return std::unexpected(
-            std::format("Config file does not exist -> {}", config_path));
+            MandelbrotError(MandelbrotError::Code::FileNotFound, error_msg));
     }
 
     // Parse config file
@@ -24,9 +29,11 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
     if (!parse_result.is_ok()) {
         const auto &errors = parse_result.unwrap_err();
         // Use the first error and convert it to string
-        const std::string error_msg = format_error(errors.at(0));
+        std::string first_msg = format_error(errors.at(0));
+        auto error_msg =
+            std::format("Failed to parse config file -> {}", first_msg);
         return std::unexpected(
-            std::format("Failed to parse config file -> {}", error_msg));
+            MandelbrotError(MandelbrotError::Code::ParseError, error_msg));
     }
 
     // Extract the root TOML value
@@ -51,7 +58,7 @@ std::expected<Config, std::string> Config::Load(std::string_view config_path) {
     return config;
 }
 
-std::expected<void, std::string>
+std::expected<void, MandelbrotError>
 Config::LoadWindowConfig(const tomlRoot &root) {
     // Table with window config
     const auto *const table_name = WINDOW_TABLE_NAME.data();
@@ -66,13 +73,16 @@ Config::LoadWindowConfig(const tomlRoot &root) {
 
         // If the option is missing return error
         if (!find_value.has_value()) {
-            return std::unexpected(
-                std::format("Missing window config option -> {}", option_name));
+            auto error_msg =
+                std::format("Missing window config option -> {}", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::MissingOption, error_msg));
         }
 
         // Get value
         int value = *find_value;
 
+        // Common error message template
         constexpr std::string_view validate_error_msg{
             "Window config option {} out of range [{}..{}] -> {}"};
 
@@ -82,16 +92,20 @@ Config::LoadWindowConfig(const tomlRoot &root) {
         case WindowOption::Width:
         case WindowOption::Height:
             if (value < WINDOW_SIZE_MIN || value > WINDOW_SIZE_MAX) {
-                return std::unexpected(std::format(validate_error_msg,
-                                                   option_name, WINDOW_SIZE_MIN,
-                                                   WINDOW_SIZE_MAX, value));
+                auto error_msg =
+                    std::format(validate_error_msg, option_name,
+                                WINDOW_SIZE_MIN, WINDOW_SIZE_MAX, value);
+                return std::unexpected(MandelbrotError(
+                    MandelbrotError::Code::InvalidValue, error_msg));
             }
             break;
         case WindowOption::Fps:
             if (value < WINDOW_FPS_MIN || value > WINDOW_FPS_MAX) {
-                return std::unexpected(std::format(validate_error_msg,
-                                                   option_name, WINDOW_FPS_MIN,
-                                                   WINDOW_FPS_MAX, value));
+                auto error_msg =
+                    std::format(validate_error_msg, option_name, WINDOW_FPS_MIN,
+                                WINDOW_FPS_MAX, value);
+                return std::unexpected(MandelbrotError(
+                    MandelbrotError::Code::InvalidValue, error_msg));
             }
             break;
         }
@@ -104,7 +118,7 @@ Config::LoadWindowConfig(const tomlRoot &root) {
     return {};
 }
 
-std::expected<void, std::string>
+std::expected<void, MandelbrotError>
 Config::LoadShaderConfig(const tomlRoot &root) {
     // Table with shader paths
     const auto *const table_name = SHADER_TABLE_NAME.data();
@@ -119,8 +133,10 @@ Config::LoadShaderConfig(const tomlRoot &root) {
 
         // If the option is missing, return an error
         if (!find_val.has_value()) {
-            return std::unexpected(
-                std::format("Missing shader path -> {}", option_name));
+            auto error_msg =
+                std::format("Missing shader path -> {}", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::MissingOption, error_msg));
         }
 
         // Crate path
@@ -128,8 +144,10 @@ Config::LoadShaderConfig(const tomlRoot &root) {
 
         // If path is not empty, check if file exists
         if (!shader_path.empty() && !std::filesystem::exists(shader_path)) {
-            return std::unexpected(std::format(
-                "Shader file does not exist -> {}", shader_path.string()));
+            auto error_msg = std::format("Shader file does not exist -> {}",
+                                         shader_path.string());
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::FileNotFound, error_msg));
         }
 
         // Store the path in the array
@@ -153,7 +171,7 @@ Config::CreateShaderPath(std::string_view shader_file_name) {
 }
 
 // NOTE: Assumes the caller uses a valid option and
-// does not attempt to access Count_
+// does not attempt to access COUNT_
 int Config::GetWindowValue(WindowOption option) const {
     const auto index = static_cast<size_t>(option);
     assert(index < window_config_.size());
@@ -162,7 +180,7 @@ int Config::GetWindowValue(WindowOption option) const {
 }
 
 // NOTE: Assumes the caller uses a valid option and
-// does not attempt to access Count_
+// does not attempt to access COUNT_
 const std::filesystem::path &Config::GetShaderPath(ShaderType type) const {
     const auto index = static_cast<size_t>(type);
     assert(index < shader_paths_.size());

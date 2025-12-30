@@ -8,21 +8,23 @@
 
 #include "toml.hpp"
 
+#include "mandelbrot_error.hpp"
+
 // Class that stores configuration file data
 class Config {
   public:
     // Enums for config options
-    // NOTE: Do not use Count_ to access elements
-    enum class WindowOption : std::uint8_t { Width, Height, Fps, Count_ };
-    enum class ShaderType : std::uint8_t { Vertex, Fragment, Count_ };
+    // NOTE: Do not use COUNT_ to access elements
+    enum class WindowOption : std::uint8_t { Width, Height, Fps, COUNT_ };
+    enum class ShaderType : std::uint8_t { Vertex, Fragment, COUNT_ };
 
     // Numbers of configuration options
     static constexpr size_t WINDOW_OPTIONS_COUNT{
-        static_cast<size_t>(WindowOption::Count_)};
+        static_cast<size_t>(WindowOption::COUNT_)};
     static constexpr size_t SHADER_TYPES_COUNT{
-        static_cast<size_t>(ShaderType::Count_)};
+        static_cast<size_t>(ShaderType::COUNT_)};
 
-    // Names of tables in configuration file
+    // Table names in configuration file
     static constexpr std::string_view WINDOW_TABLE_NAME{"window"};
     static constexpr std::string_view SHADER_TABLE_NAME{"shaders"};
 
@@ -33,14 +35,8 @@ class Config {
     static constexpr std::array<std::string_view, SHADER_TYPES_COUNT>
         SHADER_TYPES_STR{"vertex", "fragment"};
 
-    static_assert(WINDOW_OPTIONS_STR.size() == WINDOW_OPTIONS_COUNT,
-                  "WINDOW_OPTIONS_STR size must exactly match the number of "
-                  "WindowOption enum values");
-    static_assert(SHADER_TYPES_STR.size() == SHADER_TYPES_COUNT,
-                  "SHADER_TYPES_STR size must exactly match the number of "
-                  "ShaderType enum values");
-
-    [[nodiscard]] static std::expected<Config, std::string>
+    // Loads the configuration file
+    [[nodiscard]] static std::expected<Config, MandelbrotError>
     Load(std::string_view config_path);
 
     // Getters
@@ -62,11 +58,13 @@ class Config {
     static constexpr int WINDOW_FPS_MIN = 1;
     static constexpr int WINDOW_FPS_MAX = 1000;
 
+    // Creates full shader paths from file name
     static std::filesystem::path
     CreateShaderPath(std::string_view shader_file_name);
 
     using tomlRoot = toml::basic_value<toml::type_config>;
 
-    std::expected<void, std::string> LoadWindowConfig(const tomlRoot &root);
-    std::expected<void, std::string> LoadShaderConfig(const tomlRoot &root);
+    // Load section from config file
+    std::expected<void, MandelbrotError> LoadWindowConfig(const tomlRoot &root);
+    std::expected<void, MandelbrotError> LoadShaderConfig(const tomlRoot &root);
 };

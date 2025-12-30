@@ -8,13 +8,16 @@
 #include "Window.hpp"
 #include "config.hpp"
 #include "drawing_scope.hpp"
+#include "mandelbrot_error.hpp"
 
-std::expected<App *, std::string> App::New(const std::string &title,
-                                           std::string_view config_path) {
+std::expected<App *, MandelbrotError> App::New(const std::string &title,
+                                               std::string_view config_path) {
     // Singleton pattern
     static bool initialized = false;
     if (initialized) {
-        return std::unexpected("The only one app instance already exists");
+        return std::unexpected(
+            MandelbrotError(MandelbrotError::Code::SingletonAlreadyExists,
+                            "Only one instance of App is allowed"));
     }
 
     // Load the config file
@@ -24,8 +27,7 @@ std::expected<App *, std::string> App::New(const std::string &title,
 
     // If parsing did not succeed
     if (!config_result) {
-        const auto *error_msg = config_result.error().c_str();
-        return std::unexpected(error_msg);
+        return std::unexpected(std::move(config_result.error()));
     }
 
     // Parsing succeeded

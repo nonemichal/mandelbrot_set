@@ -4,6 +4,7 @@
 #include "raylib-cpp.hpp"
 
 #include "app.hpp"
+#include "mandelbrot_error.hpp"
 
 #define TITLE "Mandelbrot Set"
 #define CONFIG_FILE "config.toml"
@@ -19,10 +20,9 @@ int main() {
     // Create the app instance
     auto app_result = App::New(TITLE_STR, CONFIG_PATH_SV);
     if (!app_result) {
-        const auto *error_msg = app_result.error().c_str();
-        TraceLog(LOG_ERROR,
-                 "MANDELBROT_SET: Failed to create the app instance -> %s",
-                 error_msg);
+        const auto &error = app_result.error();
+        TraceLog(LOG_ERROR, "MANDELBROT_SET: [%s] %s", error.GetCodeString(),
+                 error.GetMessage().data());
         return 1;
     }
     TraceLog(LOG_INFO, "MANDELBROT_SET: The app instance created correctly");
