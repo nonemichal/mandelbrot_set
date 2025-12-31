@@ -31,6 +31,8 @@ IncludeCategories:
     Priority: 2
   - Regex: '^"toml.*"'
     Priority: 2
+  - Regex: '^"doctest.*"'
+    Priority: 2
   # Project-local headers
   - Regex: '^".*"'
     Priority: 3

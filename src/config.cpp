@@ -43,6 +43,22 @@ Config::Load(std::string_view config_file) {
     // Extract the root TOML value
     const auto &root = parse_result.unwrap();
 
+    // Template error message
+    constexpr std::string_view has_value_error_msg{
+        "Config file must contain a table [{}]"};
+    // Check if window table exists
+    if (!HasTable(root, WINDOW_TABLE_NAME)) {
+        auto error_msg = std::format(has_value_error_msg, WINDOW_TABLE_NAME);
+        return std::unexpected(
+            MandelbrotError(MandelbrotError::Code::ParseError, error_msg));
+    }
+    // Check if shader table exists
+    if (!HasTable(root, SHADER_TABLE_NAME)) {
+        auto error_msg = std::format(has_value_error_msg, SHADER_TABLE_NAME);
+        return std::unexpected(
+            MandelbrotError(MandelbrotError::Code::ParseError, error_msg));
+    }
+
     // Create an empty configuration object
     Config config{};
 
@@ -60,6 +76,16 @@ Config::Load(std::string_view config_file) {
 
     // Configuration loaded successfully
     return config;
+}
+
+bool Config::HasTable(const tomlRoot &root, std::string_view table_name) {
+    // Check if root contains the key
+    if (!root.contains(table_name.data())) {
+        return false;
+    }
+    const auto &table_value = root.at(table_name.data());
+    // Validate that the value is a table
+    return table_value.is(toml::value_t::table);
 }
 
 std::expected<void, MandelbrotError>

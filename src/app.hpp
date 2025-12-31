@@ -27,7 +27,7 @@ class App {
     [[nodiscard]] int GetFps() const;
     [[nodiscard]] const raylib::Window &GetWindow() const;
 
-    // Method to run the app
+    // Run the app
     void Run();
 
   private:

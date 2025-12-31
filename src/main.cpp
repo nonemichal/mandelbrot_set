@@ -19,8 +19,8 @@ int main() {
     auto app_result = App::New(TITLE_STR, CONFIG_FILE_SV);
     if (!app_result) {
         const auto &error = app_result.error();
-        TraceLog(LOG_ERROR, "MANDELBROT_SET: [%s] %s", error.GetCodeString(),
-                 error.GetMessage().data());
+        TraceLog(LOG_ERROR, "MANDELBROT_SET: [%s] %s",
+                 error.GetCodeString().data(), error.GetMessage().c_str());
         return 1;
     }
     TraceLog(LOG_INFO, "MANDELBROT_SET: The app instance created correctly");

@@ -62,7 +62,11 @@ class Config {
     static std::filesystem::path
     CreateShaderPath(std::string_view shader_file_name);
 
+    // Config file root type
     using tomlRoot = toml::basic_value<toml::type_config>;
+
+    // Validation whether the config file has the appropriate table
+    static bool HasTable(const tomlRoot &root, std::string_view table_name);
 
     // Load section from config file
     std::expected<void, MandelbrotError> LoadWindowConfig(const tomlRoot &root);
