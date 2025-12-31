@@ -1,0 +1,8 @@
+[sdfsfd]
+width = 1280
+height = 720
+fps = 60
+
+[sdfsdf]
+vertex = ""
+fragment = "tests/configs/shader_valid.frag"

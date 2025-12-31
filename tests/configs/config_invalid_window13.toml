@@ -1,0 +1,8 @@
+[window]
+wsdfsd = 1280
+vcsdv = 720
+fdsv = 60
+
+[shaders]
+vertex = ""
+fragment = "tests/configs/shader_valid.frag"

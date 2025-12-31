@@ -1,0 +1,3 @@
+[shaders]
+vertex = ""
+fragment = "tests/configs/shader_valid.frag"

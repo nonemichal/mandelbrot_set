@@ -98,8 +98,17 @@ Config::LoadWindowConfig(const tomlRoot &root) {
         const auto *const option_name = WINDOW_OPTIONS_STR.at(i).data();
 
         // Try to find the option
-        auto find_value =
-            toml::find<std::optional<int>>(root, table_name, option_name);
+        // NOTE: type_error is thrown when the value has an invalid type
+        std::optional<int> find_value;
+        try {
+            find_value =
+                toml::find<std::optional<int>>(root, table_name, option_name);
+        } catch (const toml::type_error &) {
+            auto error_msg = std::format(
+                "Invalid type for option '{}', expected int", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::InvalidValue, error_msg));
+        }
 
         // If the option is missing return error
         if (!find_value.has_value()) {
@@ -158,11 +167,20 @@ Config::LoadShaderConfig(const tomlRoot &root) {
         const auto *const option_name = SHADER_TYPES_STR.at(i).data();
 
         // Try to find the option
-        auto find_val = toml::find<std::optional<std::string>>(root, table_name,
-                                                               option_name);
+        // NOTE: type_error is thrown when the value has an invalid type
+        std::optional<std::string> find_value;
+        try {
+            find_value = toml::find<std::optional<std::string>>(
+                root, table_name, option_name);
+        } catch (const toml::type_error &) {
+            auto error_msg = std::format(
+                "Invalid type for option '{}', expected string", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::InvalidValue, error_msg));
+        }
 
         // If the option is missing, return an error
-        if (!find_val.has_value()) {
+        if (!find_value.has_value()) {
             auto error_msg =
                 std::format("Missing shader path -> {}", option_name);
             return std::unexpected(MandelbrotError(
@@ -170,7 +188,7 @@ Config::LoadShaderConfig(const tomlRoot &root) {
         }
 
         // Crate path
-        auto shader_path = CreateShaderPath(*find_val);
+        auto shader_path = CreateShaderPath(*find_value);
 
         // If path is not empty, check if file exists
         if (!shader_path.empty() && !std::filesystem::exists(shader_path)) {
