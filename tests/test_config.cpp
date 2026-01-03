@@ -10,12 +10,15 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
 
         const auto &config = result.value();
 
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Width), 0);
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Height), 0);
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Fps), 0);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        CHECK_FALSE(config.GetShaderPath(Config::ShaderType::Fragment).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
     }
     SUBCASE("Valid Config with additional settings") {
         auto result = Config::Load("tests/configs/config_valid2.toml");
@@ -24,12 +27,15 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
 
         const auto &config = result.value();
 
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Width), 0);
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Height), 0);
-        CHECK_GT(config.GetWindowValue(Config::WindowOption::Fps), 0);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        CHECK_FALSE(config.GetShaderPath(Config::ShaderType::Fragment).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
     }
 }
 
@@ -250,5 +256,96 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::MissingOption);
         MESSAGE(error.GetMessage());
+    }
+}
+
+TEST_CASE("09 - Config::GetWindowValue - window values from valid config") {
+    SUBCASE("Width value") {
+        auto result = Config::Load("tests/configs/config_valid1.toml");
+
+        REQUIRE(result.has_value());
+
+        const auto &config = result.value();
+
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
+
+        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+    }
+    SUBCASE("Height value") {
+        auto result = Config::Load("tests/configs/config_valid2.toml");
+
+        REQUIRE(result.has_value());
+
+        const auto &config = result.value();
+
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
+
+        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+    }
+    SUBCASE("FPS value") {
+        auto result = Config::Load("tests/configs/config_valid2.toml");
+
+        REQUIRE(result.has_value());
+
+        const auto &config = result.value();
+
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
+
+        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+    }
+}
+
+TEST_CASE("10 - Config::GetShaderPath - Shaders paths from valid config") {
+    SUBCASE("Vertex path") {
+        auto result = Config::Load("tests/configs/config_valid1.toml");
+
+        REQUIRE(result.has_value());
+
+        const auto &config = result.value();
+
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
+
+        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+    }
+    SUBCASE("Fragment path") {
+        auto result = Config::Load("tests/configs/config_valid2.toml");
+
+        REQUIRE(result.has_value());
+
+        const auto &config = result.value();
+
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
+        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
+
+        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
+        const auto expected_path =
+            std::filesystem::absolute("tests/configs/shader_valid.frag");
+        CHECK(std::filesystem::equivalent(
+            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
     }
 }

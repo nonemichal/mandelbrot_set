@@ -38,4 +38,9 @@ class App {
     int fps_;
     raylib::Window window_;
     raylib::Shader shader_;
+
+#ifdef MANDELBROT_BUILD_TESTS
+    // Only for tests: allow resetting the singleton
+    static void ResetSingletonForTests() { initialized = false; }
+#endif
 };
