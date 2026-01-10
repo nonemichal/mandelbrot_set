@@ -12,7 +12,7 @@
 constexpr std::string TITLE_STR{
     TITLE};  //  NOTE: Raylib window requires title as string
 constexpr std::string_view CONFIG_FILE_SV{
-    CONFIG_FILE};  // Config path as string_view
+    CONFIG_FILE};  // Config file path as string_view
 
 int main() {
     // Create the app instance

@@ -22,11 +22,6 @@ class App {
     App(App &&) = delete;
     App &operator=(App &&) = delete;
 
-    // Getters
-    [[nodiscard]] const Config &GetConfig() const;
-    [[nodiscard]] int GetFps() const;
-    [[nodiscard]] const raylib::Window &GetWindow() const;
-
     // Run the app
     void Run();
 
@@ -40,7 +35,7 @@ class App {
     raylib::Shader shader_;
 
 #ifdef MANDELBROT_BUILD_TESTS
-    // Only for tests: allow resetting the singleton
+    // Only for tests -> allow resetting the singleton
     static void ResetSingletonForTests() { initialized = false; }
 #endif
 };
