@@ -6,4 +6,5 @@ set(PROJECT_WARNING_FLAGS
     -Wconversion
     -Wsign-conversion
     -Wno-deprecated-literal-operator
-    -Wno-switch)
+    -Wno-switch
+)

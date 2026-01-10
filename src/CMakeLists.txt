@@ -18,8 +18,10 @@ target_compile_options(mandelbrot_core PUBLIC ${PROJECT_WARNING_FLAGS})
 target_link_libraries(mandelbrot_core PUBLIC raylib raylib_cpp toml11::toml11)
 
 # Define project root path macro
-target_compile_definitions(mandelbrot_core
-                           PUBLIC PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}")
+target_compile_definitions(
+    mandelbrot_core
+    PUBLIC PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}"
+)
 
 # ============================================================
 # Main application executable
@@ -30,3 +32,9 @@ add_executable(mandelbrot_set main.cpp)
 
 # Link core logic library
 target_link_libraries(mandelbrot_set PRIVATE mandelbrot_core)
+
+# Make the executable appear in the root of build/
+set_target_properties(
+    mandelbrot_set
+    PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
