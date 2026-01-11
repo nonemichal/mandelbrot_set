@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mandelbrot_error.hpp>
+#include <memory>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
@@ -10,32 +11,28 @@
 // Class to run the app
 class App {
   public:
-    // Returns the only one instance of the app
-    static std::expected<App *, MandelbrotError>
+    // Returns an instance of the app
+    static std::expected<std::unique_ptr<App>, MandelbrotError>
     New(const std::string &title, std::string_view config_file);
 
     // Delete copy operations
     App(const App &) = delete;
     App &operator=(const App &) = delete;
 
-    // Delete move operations
-    App(App &&) = delete;
-    App &operator=(App &&) = delete;
+    ~App() = default;
 
     // Run the app
     void Run();
 
   private:
-    // Private constructor and destructor
+    // Private constructor
     explicit App(const std::string &title, const Config &config);
-    ~App() = default;
+
+    // Private move operations
+    App(App &&) noexcept = default;
+    App &operator=(App &&) = default;
 
     int fps_;
     raylib::Window window_;
     raylib::Shader shader_;
-
-#ifdef MANDELBROT_BUILD_TESTS
-    // Only for tests -> allow resetting the singleton
-    static void ResetSingletonForTests() { initialized = false; }
-#endif
 };

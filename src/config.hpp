@@ -8,32 +8,49 @@
 
 #include "toml.hpp"
 
+#include "enum_list.hpp"
 #include "mandelbrot_error.hpp"
 
 // Class that stores configuration file data
 class Config {
   public:
     // Enums for config options
-    // NOTE: Do not use COUNT_ to access elements
-    enum class WindowOption : std::uint8_t { Width, Height, Fps, COUNT_ };
-    enum class ShaderType : std::uint8_t { Vertex, Fragment, COUNT_ };
+    enum class WindowOption : std::uint8_t {
+#define X(name, str) name,  // Expand each macro element into an enum value
+        WINDOW_OPTION_LIST(X)
+#undef X
+    };
+    enum class ShaderType : std::uint8_t {
+#define X(name, str) name,  // Expand each macro element into an enum value
+        SHADER_TYPE_LIST(X)
+#undef X
+    };
 
     // Numbers of configuration options
     static constexpr size_t WINDOW_OPTIONS_COUNT{
-        static_cast<size_t>(WindowOption::COUNT_)};
+        0 WINDOW_OPTION_LIST(X_ENUM_COUNT)};
     static constexpr size_t SHADER_TYPES_COUNT{
-        static_cast<size_t>(ShaderType::COUNT_)};
+        0 SHADER_TYPE_LIST(X_ENUM_COUNT)};
+
+    // Array of string names for window options
+    static constexpr std::array<std::string_view, WINDOW_OPTIONS_COUNT>
+        WINDOW_OPTIONS_STR{
+#define X(name, str) str,  // Expand each macro element into its string
+            WINDOW_OPTION_LIST(X)
+#undef X
+        };
+
+    // Array of string names for shader types
+    static constexpr std::array<std::string_view, SHADER_TYPES_COUNT>
+        SHADER_TYPES_STR{
+#define X(name, str) str,  // Expand each macro element into its string
+            SHADER_TYPE_LIST(X)
+#undef X
+        };
 
     // Table names in configuration file
     static constexpr std::string_view WINDOW_TABLE_NAME{"window"};
     static constexpr std::string_view SHADER_TABLE_NAME{"shaders"};
-
-    // List of configuration option names as strings
-    // NOTE: The order must exactly match the order of the enums
-    static constexpr std::array<std::string_view, WINDOW_OPTIONS_COUNT>
-        WINDOW_OPTIONS_STR{"width", "height", "fps"};
-    static constexpr std::array<std::string_view, SHADER_TYPES_COUNT>
-        SHADER_TYPES_STR{"vertex", "fragment"};
 
     // Project root path
     static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
@@ -54,7 +71,7 @@ class Config {
 
     // Window config boundary values
     static constexpr int WINDOW_SIZE_MIN = 64;
-    static constexpr int WINDOW_SIZE_MAX = 16384;  // at least 8K
+    static constexpr int WINDOW_SIZE_MAX = 16384;
     static constexpr int WINDOW_FPS_MIN = 1;
     static constexpr int WINDOW_FPS_MAX = 1000;
 

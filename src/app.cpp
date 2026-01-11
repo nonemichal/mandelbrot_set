@@ -1,5 +1,6 @@
 #include "app.hpp"
 
+#include <memory>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
@@ -10,16 +11,8 @@
 #include "drawing_scope.hpp"
 #include "mandelbrot_error.hpp"
 
-std::expected<App *, MandelbrotError> App::New(const std::string &title,
-                                               std::string_view config_file) {
-    // Singleton pattern
-    static bool initialized = false;
-    if (initialized) {
-        return std::unexpected(
-            MandelbrotError(MandelbrotError::Code::SingletonAlreadyExists,
-                            "Only one instance of App is allowed"));
-    }
-
+std::expected<std::unique_ptr<App>, MandelbrotError>
+App::New(const std::string &title, std::string_view config_file) {
     // Load the config file
     TraceLog(LOG_INFO, "MANDELBROT_SET: Loading config file -> %s",
              config_file.data());
@@ -35,10 +28,10 @@ std::expected<App *, MandelbrotError> App::New(const std::string &title,
     auto &config = config_result.value();
 
     // Create and initialize the app instance
-    static App instance{title, config};
-    initialized = true;
+    // NOTE: cannot use make_unique with private constructor
+    std::unique_ptr<App> instance(new App(title, config));
 
-    return &instance;
+    return instance;
 }
 
 App::App(const std::string &title, const Config &config)

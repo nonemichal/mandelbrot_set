@@ -218,8 +218,6 @@ Config::CreateShaderPath(std::string_view shader_file_name) {
     return shader_path;
 }
 
-// NOTE: Assumes the caller uses a valid option and
-// does not attempt to access COUNT_
 int Config::GetWindowValue(WindowOption option) const {
     const auto index = static_cast<size_t>(option);
     assert(index < window_config_.size());
@@ -227,8 +225,6 @@ int Config::GetWindowValue(WindowOption option) const {
     return value;
 }
 
-// NOTE: Assumes the caller uses a valid option and
-// does not attempt to access COUNT_
 const std::filesystem::path &Config::GetShaderPath(ShaderType type) const {
     const auto index = static_cast<size_t>(type);
     assert(index < shader_paths_.size());

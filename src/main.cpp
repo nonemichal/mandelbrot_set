@@ -6,17 +6,14 @@
 #include "app.hpp"
 #include "mandelbrot_error.hpp"
 
-#define TITLE "Mandelbrot Set"
-#define CONFIG_FILE "config.toml"
-
-constexpr std::string TITLE_STR{
-    TITLE};  //  NOTE: Raylib window requires title as string
-constexpr std::string_view CONFIG_FILE_SV{
-    CONFIG_FILE};  // Config file path as string_view
+constexpr std::string TITLE{
+    "Mandelbrot Set"};  //  NOTE: Raylib window requires title as string
+constexpr std::string_view CONFIG_FILE{
+    "config.toml"};  // Config file path as string_view
 
 int main() {
     // Create the app instance
-    auto app_result = App::New(TITLE_STR, CONFIG_FILE_SV);
+    auto app_result = App::New(TITLE, CONFIG_FILE);
     if (!app_result) {
         const auto &error = app_result.error();
         TraceLog(LOG_ERROR, "MANDELBROT_SET: [%s] %s",

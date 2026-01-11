@@ -5,18 +5,16 @@
 #include <string>
 #include <string_view>
 
+#include "enum_list.hpp"
+
 // Represents an error that can occur in the application
 // Designed to be used as the error type for std::expected<T, MandelbrotError>
 class MandelbrotError {
   public:
     enum class Code : std::uint8_t {
-        SingletonAlreadyExists,  // Attempted to create a second instance of a
-                                 // singleton
-        FileNotFound,            // Referenced file does not exist
-        ParseError,              // Configuration file could not be parsed
-        MissingOption,           // Required configuration option is missing
-        InvalidValue,  // Configuration value is outside the allowed range
-        COUNT_,        // Number of errors
+#define X(name, str) name,
+        ERROR_CODE_LIST(X)
+#undef X
     };
 
     // Constructs an error with a specific code and message
@@ -38,12 +36,13 @@ class MandelbrotError {
     std::string message_;
 
     // Numbers of error codes
-    static constexpr size_t ERROR_CODES_COUNT{
-        static_cast<size_t>(Code::COUNT_)};
+    static constexpr size_t ERROR_CODES_COUNT{0 ERROR_CODE_LIST(X_ENUM_COUNT)};
 
     // Error codes as strings
-    // NOTE: The order must exactly match the order of the enum
     static constexpr std::array<std::string_view, ERROR_CODES_COUNT>
-        ERROR_CODES_STR{"SingletonAlreadyExists", "FileNotFound", "ParseError",
-                        "MissingOption", "InvalidValue"};
+        ERROR_CODES_STR{
+#define X(name, str) str,
+            ERROR_CODE_LIST(X)
+#undef X
+        };
 };
