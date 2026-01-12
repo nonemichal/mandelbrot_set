@@ -1,5 +1,5 @@
 # Test source files
-set(MANDELBROT_TEST_SOURCES test_main.cpp test_app.cpp test_config.cpp)
+set(MANDELBROT_TEST_SOURCES test_main.cpp test_config.cpp)
 
 # Create executable for unit tests
 add_executable(mandelbrot_tests ${MANDELBROT_TEST_SOURCES})
