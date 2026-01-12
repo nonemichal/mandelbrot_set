@@ -11,7 +11,7 @@
 // Class to run the app
 class App {
   public:
-    // Returns an instance of the app
+    // Creates an app instance
     static std::expected<std::unique_ptr<App>, MandelbrotError>
     New(const std::string &title, std::string_view config_file);
 
@@ -29,8 +29,8 @@ class App {
     explicit App(const std::string &title, const Config &config);
 
     // Private move operations
-    App(App &&) noexcept = default;
-    App &operator=(App &&) = default;
+    App(App &&) noexcept = delete;
+    App &operator=(App &&) = delete;
 
     int fps_;
     raylib::Window window_;

@@ -2,7 +2,7 @@
 
 #include "raylib-cpp.hpp"
 
-// Class using RAII to determine drawing scope
+// Class to determine drawing scope
 // NOTE: It has to be used whenever something on the window will be drawn
 class DrawingScope {
   public:

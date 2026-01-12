@@ -8,7 +8,6 @@
 #include "enum_list.hpp"
 
 // Represents an error that can occur in the application
-// Designed to be used as the error type for std::expected<T, MandelbrotError>
 class MandelbrotError {
   public:
     enum class Code : std::uint8_t {
@@ -17,7 +16,6 @@ class MandelbrotError {
 #undef X
     };
 
-    // Constructs an error with a specific code and message
     explicit MandelbrotError(Code code, std::string message)
         : code_(code), message_(std::move(message)) {}
 

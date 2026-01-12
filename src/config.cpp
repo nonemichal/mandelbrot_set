@@ -43,7 +43,7 @@ Config::Load(std::string_view config_file) {
     // Extract the root TOML value
     const auto &root = parse_result.unwrap();
 
-    // Template error message
+    // Error message
     constexpr std::string_view has_value_error_msg{
         "Config file must contain a table [{}]"};
     // Check if window table exists

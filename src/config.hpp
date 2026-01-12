@@ -16,12 +16,12 @@ class Config {
   public:
     // Enums for config options
     enum class WindowOption : std::uint8_t {
-#define X(name, str) name,  // Expand each macro element into an enum value
+#define X(name, str) name,
         WINDOW_OPTION_LIST(X)
 #undef X
     };
     enum class ShaderType : std::uint8_t {
-#define X(name, str) name,  // Expand each macro element into an enum value
+#define X(name, str) name,
         SHADER_TYPE_LIST(X)
 #undef X
     };
@@ -35,7 +35,7 @@ class Config {
     // Array of string names for window options
     static constexpr std::array<std::string_view, WINDOW_OPTIONS_COUNT>
         WINDOW_OPTIONS_STR{
-#define X(name, str) str,  // Expand each macro element into its string
+#define X(name, str) str,
             WINDOW_OPTION_LIST(X)
 #undef X
         };
@@ -43,7 +43,7 @@ class Config {
     // Array of string names for shader types
     static constexpr std::array<std::string_view, SHADER_TYPES_COUNT>
         SHADER_TYPES_STR{
-#define X(name, str) str,  // Expand each macro element into its string
+#define X(name, str) str,
             SHADER_TYPE_LIST(X)
 #undef X
         };
