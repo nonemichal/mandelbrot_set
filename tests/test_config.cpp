@@ -15,10 +15,14 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
+
+        CHECK_EQ(actual_path, expected_path);
     }
     SUBCASE("Valid Config with additional settings") {
         auto result = Config::Load("tests/configs/config_valid2.toml");
@@ -32,10 +36,14 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
+
+        CHECK_EQ(actual_path, expected_path);
     }
 }
 
@@ -272,10 +280,14 @@ TEST_CASE("09 - Config::GetWindowValue - window values from valid config") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
+
+        CHECK_EQ(actual_path, expected_path);
     }
     SUBCASE("Height value") {
         auto result = Config::Load("tests/configs/config_valid2.toml");
@@ -289,10 +301,12 @@ TEST_CASE("09 - Config::GetWindowValue - window values from valid config") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
     }
     SUBCASE("FPS value") {
         auto result = Config::Load("tests/configs/config_valid2.toml");
@@ -306,10 +320,12 @@ TEST_CASE("09 - Config::GetWindowValue - window values from valid config") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
     }
 }
 
@@ -326,10 +342,12 @@ TEST_CASE("10 - Config::GetShaderPath - Shaders paths from valid config") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
     }
     SUBCASE("Fragment path") {
         auto result = Config::Load("tests/configs/config_valid2.toml");
@@ -343,9 +361,11 @@ TEST_CASE("10 - Config::GetShaderPath - Shaders paths from valid config") {
         CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
 
         CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-        const auto expected_path =
-            std::filesystem::absolute("tests/configs/shader_valid.frag");
-        CHECK(std::filesystem::equivalent(
-            config.GetShaderPath(Config::ShaderType::Fragment), expected_path));
+
+        const auto expected_path = std::filesystem::canonical(
+            std::filesystem::path(PROJECT_ROOT_PATH) /
+            "tests/configs/shader_valid.frag");
+        const auto actual_path = std::filesystem::canonical(
+            config.GetShaderPath(Config::ShaderType::Fragment));
     }
 }

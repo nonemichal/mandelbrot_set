@@ -17,12 +17,6 @@ target_compile_options(mandelbrot_core PUBLIC ${PROJECT_WARNING_FLAGS})
 # Link third-party libraries
 target_link_libraries(mandelbrot_core PUBLIC raylib raylib_cpp toml11::toml11)
 
-# Define project root path macro
-target_compile_definitions(
-    mandelbrot_core
-    PUBLIC PROJECT_ROOT_PATH="${CMAKE_SOURCE_DIR}"
-)
-
 # ============================================================
 # Main application executable
 # ============================================================

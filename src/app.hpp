@@ -19,6 +19,10 @@ class App {
     App(const App &) = delete;
     App &operator=(const App &) = delete;
 
+    // Delete move operations
+    App(App &&) noexcept = delete;
+    App &operator=(App &&) = delete;
+
     ~App() = default;
 
     // Run the app
@@ -27,10 +31,6 @@ class App {
   private:
     // Private constructor
     explicit App(const std::string &title, const Config &config);
-
-    // Private move operations
-    App(App &&) noexcept = delete;
-    App &operator=(App &&) = delete;
 
     int fps_;
     raylib::Window window_;
