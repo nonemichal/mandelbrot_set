@@ -1,19 +1,13 @@
 name: CI
-
 on:
   push:
   pull_request:
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -30,17 +24,14 @@ jobs:
             libasound2-dev \
             libpulse-dev \
             libopenal-dev
-
       - name: Configure (CMake)
         run: |
           cmake -S . -B build \
             -DMANDELBROT_BUILD_TESTS=ON \
             -DCMAKE_BUILD_TYPE=Debug
-
       - name: Build
         run: |
           cmake --build build --verbose
-
       - name: Run tests
         working-directory: build
         run: |
