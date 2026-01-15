@@ -13,14 +13,13 @@ constexpr std::string_view CONFIG_FILE{
 
 int main() {
     // Create the app instance
-    auto app_result = App::New(TITLE, CONFIG_FILE);
+    auto app_result = App::Instance(TITLE, CONFIG_FILE);
     if (!app_result) {
         const auto &error = app_result.error();
         TraceLog(LOG_ERROR, "MANDELBROT_SET: [%s] %s",
                  error.GetCodeString().data(), error.GetMessage().c_str());
         return 1;
     }
-    TraceLog(LOG_INFO, "MANDELBROT_SET: The app instance created correctly");
 
     // Creating succeeded
     auto &app = app_result.value();
