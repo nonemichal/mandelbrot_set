@@ -56,16 +56,7 @@ App::App(const std::string &title, const Config &config)
 void App::Run() {
     // Main loop
     while (!window_.ShouldClose()) {  // Detect window close button or ESC key
-        const int max_iter = 1000;
-        constexpr float d_zoom = -0.0001;
-        static float zoom = 1;
-        shader_.SetValue(shader_.GetLocation("maxIter"), &max_iter,
-                         SHADER_UNIFORM_INT);
-        shader_.SetValue(shader_.GetLocation("zoom"), &zoom,
-                         SHADER_UNIFORM_FLOAT);
-        zoom += d_zoom;
-
-        // Draw
+                                      // Draw
         {
             DrawingScope drawing_scope(window_);
             window_.ClearBackground(WHITE);
