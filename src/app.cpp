@@ -51,12 +51,20 @@ App::App(const std::string &title, const Config &config)
               config.GetShaderPath(Config::ShaderType::Fragment)) {
     // Set FPS
     window_.SetTargetFPS(fps_);
+    // Get shader locations
+    // window_width_loc_ = shader_.GetLocation("windowWidth");
+    // window_height_loc_ = shader_.GetLocation("windowHeight");
+    // Set shader uniforms
+    // auto window_width = window_.GetWidth();
+    // auto window_height = window_.GetHeight();
+    // shader_.SetValue(window_width_loc_, &window_width, SHADER_UNIFORM_FLOAT);
+    // shader_.SetValue(window_height_loc_, &window_height, SHADER_UNIFORM_FLOAT);
 }
 
 void App::Run() {
     // Main loop
     while (!window_.ShouldClose()) {  // Detect window close button or ESC key
-                                      // Draw
+        // Draw
         {
             DrawingScope drawing_scope(window_);
             window_.ClearBackground(WHITE);

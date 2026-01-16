@@ -34,4 +34,6 @@ class App {
     int fps_;
     raylib::Window window_;
     raylib::Shader shader_;
+    // Shader locations
+    int window_width_loc_, window_height_loc_;
 };
