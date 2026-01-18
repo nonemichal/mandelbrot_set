@@ -1,6 +1,7 @@
 [window] # Int values
-width = 1280
-height = 720
+# Better to keep 7/4 proportions
+width = 1400
+height = 1000
 fps = 60
 
 [shaders] # String (paths) values
