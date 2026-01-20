@@ -1,5 +1,6 @@
 #include "app.hpp"
 
+#include <print>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
@@ -51,14 +52,6 @@ App::App(const std::string &title, const Config &config)
               config.GetShaderPath(Config::ShaderType::Fragment)) {
     // Set FPS
     window_.SetTargetFPS(fps_);
-    // Get shader locations
-    window_width_loc_ = shader_.GetLocation("windowWidth");
-    window_height_loc_ = shader_.GetLocation("windowHeight");
-    // Set shader uniforms
-    auto window_width = window_.GetWidth();
-    auto window_height = window_.GetHeight();
-    shader_.SetValue(window_width_loc_, &window_width, SHADER_UNIFORM_FLOAT);
-    shader_.SetValue(window_height_loc_, &window_height, SHADER_UNIFORM_FLOAT);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
     // So shader can not be applied here directly because input vertexTexCoord
@@ -68,6 +61,17 @@ App::App(const std::string &title, const Config &config)
     render_texture_ =
         raylib::RenderTexture::Load(window_.GetWidth(), window_.GetHeight());
     texture_ = render_texture_.GetTexture();
+
+    // Prepare color palette
+    for (size_t i = 0; i < PALETTE_SIZE; ++i) {
+        color_palette_.at(i) = Color{
+            static_cast<unsigned char>(HSV_PALETTE.at(i).r * 255.0F),
+            static_cast<unsigned char>(HSV_PALETTE.at(i).g * 255.0F),
+            static_cast<unsigned char>(HSV_PALETTE.at(i).b * 255.0F), 255};
+    }
+    Image palette_image(color_palette_.data(), static_cast<int>(PALETTE_SIZE),
+                        1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+    palette_texture_ = raylib::Texture(palette_image);
 }
 
 void App::Run() {
@@ -94,6 +98,7 @@ void App::Draw() {
     window_.BeginDrawing();
     window_.ClearBackground(BLACK);
     shader_.BeginMode();
+    shader_.SetValue(shader_.GetLocation("uColorPalette"), palette_texture_);
     static const raylib::Vector2 pos{0.0, 0.0};
     texture_.Draw(pos);
     shader_.EndMode();

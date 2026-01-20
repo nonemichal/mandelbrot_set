@@ -2,15 +2,14 @@
 
 // Pixel coordinates in [0.0, 1.0]
 in vec2 fragTexCoord;
-uniform float windowWidth, windowHeight;
 // Output color
 out vec4 fragColor;
+// Color palette
+uniform sampler2D uColorPalette;
 
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
-// Config
-// "when the sum of the squares of the real and imaginary parts exceed 4, the point has reached escape."
-const float escapeVal = 4.0;
+const float escapeVal = 4;
 const int maxIter = 50;
 // Y scaled to [-1.25, 1.25]
 const float minY = -1.25;
@@ -39,6 +38,13 @@ void main() {
     iter++;
   }
 
-  float iterVal = float(iter) / float(maxIter);
-  fragColor = vec4(iterVal, 0.0, 0.0, 1.0);
+  // Linear interpolation
+  float logZn = log(z.x * z.x + z.y * z.y) / 2.0;
+  float nu = log(logZn / log(2.0)) / log(2.0);
+  float smoothIter = float(iter) + 1.0 - nu;
+  float t = smoothIter / float(maxIter);
+  t = clamp(t, 0.0, 1.0);
+
+  vec3 color = texture(uColorPalette, vec2(t, 0.5)).rgb;
+  fragColor = vec4(color, 1.0);
 }
