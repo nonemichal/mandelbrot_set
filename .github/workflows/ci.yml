@@ -13,6 +13,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
+            wget \
+            curl \
+            texinfo \
+            flex \
+            bison \
+            libgmp-dev \
+            libmpfr-dev \
+            libmpc-dev \
             cmake \
             libx11-dev \
             libxcursor-dev \
@@ -24,17 +32,14 @@ jobs:
             libasound2-dev \
             libpulse-dev \
             libopenal-dev
-      - name: Install GCC 15
-        run: |
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-          sudo apt-get update
-          sudo apt-get install -y gcc-15 g++-15
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v2
+        with:
+          version: 14
+          platform: x64
       - name: Configure
         run: |
           cmake -S . -B build \
-            -DCMAKE_C_COMPILER=gcc-15 \
-            -DCMAKE_CXX_COMPILER=g++-15 \
             -DMANDELBROT_BUILD_TESTS=ON \
             -DCMAKE_BUILD_TYPE=Debug
       - name: Build
