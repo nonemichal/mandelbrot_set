@@ -66,8 +66,8 @@ class Config {
 
   private:
     // Config values
-    std::array<int, WINDOW_OPTIONS_COUNT> window_config_{};
-    std::array<std::filesystem::path, SHADER_TYPES_COUNT> shader_paths_{};
+    std::array<int, WINDOW_OPTIONS_COUNT> window_config{};
+    std::array<std::filesystem::path, SHADER_TYPES_COUNT> shader_paths{};
 
     // Window config boundary values
     static constexpr int WINDOW_SIZE_MIN = 64;

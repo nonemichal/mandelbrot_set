@@ -21,7 +21,7 @@ struct RGB {
         constexpr float hue_sector_degrees = 60.0F;
         constexpr int hue_sector_count = 6;
 
-        // Chroma represents the color intensity
+        // Color intensity
         float chroma = value * saturation;
 
         // Position on the color wheel
@@ -67,6 +67,8 @@ struct RGB {
         return rgb_primary + RGB{match_value, match_value, match_value};
     }
 
+    // Generates RGB color palette with evenly spaced hues around the HSV color
+    // wheel
     template <size_t palette_size>
     static constexpr std::array<RGB, palette_size>
     GenPaletteHSV(float saturation = 1.0F, float value = 1.0F) {

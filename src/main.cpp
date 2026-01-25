@@ -4,7 +4,6 @@
 #include "raylib-cpp.hpp"
 
 #include "app.hpp"
-#include "mandelbrot_error.hpp"
 
 constexpr std::string TITLE{
     "Mandelbrot Set"};  //  NOTE: Raylib window requires title as string

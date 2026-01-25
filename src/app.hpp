@@ -1,14 +1,13 @@
 #pragma once
 
-#include <mandelbrot_error.hpp>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
 
 #include "config.hpp"
+#include "mandelbrot_error.hpp"
 #include "rgb.hpp"
 
-// Class to run the app
 class App {
   public:
     explicit App(const std::string &title, const Config &config);
@@ -32,12 +31,12 @@ class App {
     void Run();
 
   private:
-    int fps_;
-    raylib::Window window_;
-    raylib::Shader shader_;
+    int fps;
+    raylib::Window window;
+    raylib::Shader shader;
     // Texture
-    raylib::RenderTexture render_texture_;
-    raylib::Texture texture_;
+    raylib::RenderTexture render_texture;
+    raylib::Texture texture;
 
     void PrepareTexture();
     void Draw();
@@ -45,6 +44,6 @@ class App {
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;
     static constexpr auto HSV_PALETTE = RGB::GenPaletteHSV<PALETTE_SIZE>();
-    std::array<raylib::Color, PALETTE_SIZE> color_palette_;
-    raylib::Texture palette_texture_;
+    std::array<raylib::Color, PALETTE_SIZE> color_palette;
+    raylib::Texture palette_texture;
 };

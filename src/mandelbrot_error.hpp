@@ -17,21 +17,21 @@ class MandelbrotError {
     };
 
     explicit MandelbrotError(Code code, std::string message)
-        : code_(code), message_(std::move(message)) {}
+        : code(code), message(std::move(message)) {}
 
     // Getters
-    [[nodiscard]] Code GetCode() const noexcept { return code_; }
+    [[nodiscard]] Code GetCode() const noexcept { return code; }
     [[nodiscard]] std::string_view GetCodeString() const noexcept {
-        auto index = static_cast<size_t>(code_);
+        auto index = static_cast<size_t>(code);
         return ERROR_CODES_STR.at(index);
     }
     [[nodiscard]] const std::string &GetMessage() const noexcept {
-        return message_;
+        return message;
     }
 
   private:
-    Code code_;
-    std::string message_;
+    Code code;
+    std::string message;
 
     // Numbers of error codes
     static constexpr size_t ERROR_CODES_COUNT{0 ERROR_CODE_LIST(X_ENUM_COUNT)};

@@ -1,10 +1,8 @@
 #include "app.hpp"
 
-#include <print>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
-#include "raylib.h"
 
 #include "RenderTexture.hpp"
 #include "Window.hpp"
@@ -44,39 +42,38 @@ App::Instance(const std::string &title, std::string_view config_file) {
 }
 
 App::App(const std::string &title, const Config &config)
-    : fps_(config.GetWindowValue(Config::WindowOption::Fps)),
-      window_(config.GetWindowValue(Config::WindowOption::Width),
-              config.GetWindowValue(Config::WindowOption::Height),
-              title),  // NOTE: Raylib window requires title as string
-      shader_(config.GetShaderPath(Config::ShaderType::Vertex),
-              config.GetShaderPath(Config::ShaderType::Fragment)) {
-    // Set FPS
-    window_.SetTargetFPS(fps_);
+    : fps(config.GetWindowValue(Config::WindowOption::Fps)),
+      window(config.GetWindowValue(Config::WindowOption::Width),
+             config.GetWindowValue(Config::WindowOption::Height),
+             title),  // NOTE: Raylib window requires title as string
+      shader(config.GetShaderPath(Config::ShaderType::Vertex),
+             config.GetShaderPath(Config::ShaderType::Fragment)) {
+    window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
     // So shader can not be applied here directly because input vertexTexCoord
     // Do not represent full screen coordinates (space where want to apply
     // shader)"
     // https://github.com/raysan5/raylib/blob/master/examples/shaders/shaders_mandelbrot_set.c#L190
-    render_texture_ =
-        raylib::RenderTexture::Load(window_.GetWidth(), window_.GetHeight());
-    texture_ = render_texture_.GetTexture();
+    render_texture =
+        raylib::RenderTexture::Load(window.GetWidth(), window.GetHeight());
+    texture = render_texture.GetTexture();
 
     // Prepare color palette
     for (size_t i = 0; i < PALETTE_SIZE; ++i) {
-        color_palette_.at(i) = Color{
+        color_palette.at(i) = Color{
             static_cast<unsigned char>(HSV_PALETTE.at(i).r * 255.0F),
             static_cast<unsigned char>(HSV_PALETTE.at(i).g * 255.0F),
             static_cast<unsigned char>(HSV_PALETTE.at(i).b * 255.0F), 255};
     }
-    Image palette_image(color_palette_.data(), static_cast<int>(PALETTE_SIZE),
-                        1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-    palette_texture_ = raylib::Texture(palette_image);
+    Image palette_image(color_palette.data(), static_cast<int>(PALETTE_SIZE), 1,
+                        1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+    palette_texture = raylib::Texture(palette_image);
 }
 
 void App::Run() {
     // Main loop
-    while (!window_.ShouldClose()) {  // Detect window close button or ESC key
+    while (!window.ShouldClose()) {  // Detect window close button or ESC key
         PrepareTexture();
         Draw();
     }
@@ -84,23 +81,23 @@ void App::Run() {
 
 // Prepare a texture to be used later as canvas
 void App::PrepareTexture() {
-    render_texture_.BeginMode();
-    window_.ClearBackground(BLACK);
-    const auto width_float = static_cast<float>(window_.GetWidth());
-    const auto height_float = static_cast<float>(window_.GetHeight());
+    render_texture.BeginMode();
+    window.ClearBackground(BLACK);
+    const auto width_float = static_cast<float>(window.GetWidth());
+    const auto height_float = static_cast<float>(window.GetHeight());
     static const raylib::Rectangle rectangle(0, 0, width_float, height_float);
     rectangle.Draw(BLACK);
-    render_texture_.EndMode();
+    render_texture.EndMode();
 }
 
 // Draw the saved texture and render shaders
 void App::Draw() {
-    window_.BeginDrawing();
-    window_.ClearBackground(BLACK);
-    shader_.BeginMode();
-    shader_.SetValue(shader_.GetLocation("uColorPalette"), palette_texture_);
+    window.BeginDrawing();
+    window.ClearBackground(BLACK);
+    shader.BeginMode();
+    shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
     static const raylib::Vector2 pos{0.0, 0.0};
-    texture_.Draw(pos);
-    shader_.EndMode();
-    window_.EndDrawing();
+    texture.Draw(pos);
+    shader.EndMode();
+    window.EndDrawing();
 }

@@ -150,7 +150,7 @@ Config::LoadWindowConfig(const tomlRoot &root) {
         }
 
         // Set value
-        window_config_.at(i) = value;
+        window_config.at(i) = value;
         TraceLog(LOG_INFO, "MANDELBROT_SET: Setting %s %s -> %d", table_name,
                  option_name, value);
     }
@@ -199,9 +199,9 @@ Config::LoadShaderConfig(const tomlRoot &root) {
         }
 
         // Store the path in the array
-        shader_paths_.at(i) = std::move(shader_path);
+        shader_paths.at(i) = std::move(shader_path);
         TraceLog(LOG_INFO, "MANDELBROT_SET: Setting %s %s -> %s", table_name,
-                 option_name, shader_paths_.at(i).c_str());
+                 option_name, shader_paths.at(i).c_str());
     }
     return {};
 }
@@ -220,14 +220,14 @@ Config::CreateShaderPath(std::string_view shader_file_name) {
 
 int Config::GetWindowValue(WindowOption option) const {
     const auto index = static_cast<size_t>(option);
-    assert(index < window_config_.size());
-    const auto value = window_config_.at(index);
+    assert(index < window_config.size());
+    const auto value = window_config.at(index);
     return value;
 }
 
 const std::filesystem::path &Config::GetShaderPath(ShaderType type) const {
     const auto index = static_cast<size_t>(type);
-    assert(index < shader_paths_.size());
-    const auto &value = shader_paths_.at(index);
+    assert(index < shader_paths.size());
+    const auto &value = shader_paths.at(index);
     return value;
 }
