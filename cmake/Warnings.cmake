@@ -1,4 +1,3 @@
-# Common warning flags
 set(PROJECT_WARNING_FLAGS
     -Wall
     -Wextra
