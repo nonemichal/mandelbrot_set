@@ -5,3 +5,4 @@ fps = 60
 
 [render]
 base_iter = 500
+bailout_power = 16

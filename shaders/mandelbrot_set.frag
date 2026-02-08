@@ -9,10 +9,11 @@ uniform sampler2D uColorPalette;
 
 uniform float zoom;
 uniform int maxIter;
+uniform int bailoutPower;
 
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
-const float bailoutRadius = (1 << 16); // Escape value
+int bailoutRadius = (1 << bailoutPower); // Escape value
 // Y scaled to [-1.25, 1.25]
 const float minY = -1.25;
 const float maxY = 1.25;

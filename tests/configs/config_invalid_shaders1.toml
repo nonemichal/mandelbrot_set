@@ -9,3 +9,4 @@ fragment = "tests/configs/shader_INvalid.frag"
 
 [render]
 base_iter = 500
+bailout_power = 16

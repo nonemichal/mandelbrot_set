@@ -8,5 +8,5 @@ vertex = ""
 fragment = "tests/configs/shader_valid.frag"
 
 [render]
-base_iter = -10
-bailout_power = 16
+sdf = 500
+wer = 500

@@ -4,6 +4,7 @@
 #include <string_view>
 
 #include "raylib-cpp.hpp"
+#include "raylib.h"
 
 #include "RenderTexture.hpp"
 #include "Window.hpp"
@@ -53,7 +54,8 @@ App::App(const std::string &title, const Config &config)
              title),  // NOTE: Raylib window requires title as string
       shader(config.GetShaderPath(Config::ShaderType::Vertex),
              config.GetShaderPath(Config::ShaderType::Fragment)),
-      base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)) {
+      base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)),
+      bailout_power(config.GetRenderValue(Config::RenderOption::BailoutPower)) {
     window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
@@ -114,6 +116,8 @@ void App::Draw() {
         static_cast<int>(static_cast<float>(base_iter) * (1 + std::log(zoom)));
     shader.SetValue(shader.GetLocation("zoom"), &zoom, SHADER_UNIFORM_FLOAT);
     shader.SetValue(shader.GetLocation("maxIter"), &max_iter,
+                    SHADER_UNIFORM_INT);
+    shader.SetValue(shader.GetLocation("bailoutPower"), &bailout_power,
                     SHADER_UNIFORM_INT);
 
     static const raylib::Vector2 pos{0.0, 0.0};

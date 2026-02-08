@@ -40,6 +40,7 @@ class App {
     raylib::Texture texture;
     // Render
     int base_iter;
+    int bailout_power;
 
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;

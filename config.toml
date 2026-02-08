@@ -9,4 +9,5 @@ vertex = ""
 fragment = "shaders/mandelbrot_set.frag"
 
 [render] # Int values
-base_iter = 500 # Int
+base_iter = 500
+bailout_power = 16

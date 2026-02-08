@@ -16,7 +16,9 @@
     X(Fragment, "fragment")
 
 // Macro defining all render options
-#define RENDER_OPTION_LIST(X) X(BaseIter, "base_iter")
+#define RENDER_OPTION_LIST(X)                                                  \
+    X(BaseIter, "base_iter")                                                   \
+    X(BailoutPower, "bailout_power")
 
 // Macro defining all error codes types
 #define ERROR_CODE_LIST(X)                                                     \

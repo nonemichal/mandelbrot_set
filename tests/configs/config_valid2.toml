@@ -9,6 +9,7 @@ fragment = "tests/configs/shader_valid.frag"
 
 [render]
 base_iter = 500
+bailout_power = 16
 
 [sdfsd]
 ssdf = 10

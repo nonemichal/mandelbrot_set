@@ -129,32 +129,33 @@ Config::LoadWindowConfig(const tomlRoot &root) {
         // Get value
         int value = *find_value;
 
-        // Common error message template
-        constexpr std::string_view validate_error_msg{
-            "Window config option {} out of range [{}..{}] -> {}"};
+        // Boundary values
+        int min_value = 0;
+        int max_value = 0;
 
-        // Validate value
+        // Update boundary values for each option
         switch (static_cast<WindowOption>(i)) {
-        // Cases for width and height share the same validation rules
+        // Width and height share the same validation rules
         case WindowOption::Width:
         case WindowOption::Height:
-            if (value < WINDOW_SIZE_MIN || value > WINDOW_SIZE_MAX) {
-                auto error_msg =
-                    std::format(validate_error_msg, option_name,
-                                WINDOW_SIZE_MIN, WINDOW_SIZE_MAX, value);
-                return std::unexpected(MandelbrotError(
-                    MandelbrotError::Code::InvalidValue, error_msg));
-            }
+            min_value = WINDOW_SIZE_MIN;
+            max_value = WINDOW_SIZE_MAX;
             break;
         case WindowOption::Fps:
-            if (value < WINDOW_FPS_MIN || value > WINDOW_FPS_MAX) {
-                auto error_msg =
-                    std::format(validate_error_msg, option_name, WINDOW_FPS_MIN,
-                                WINDOW_FPS_MAX, value);
-                return std::unexpected(MandelbrotError(
-                    MandelbrotError::Code::InvalidValue, error_msg));
-            }
+            min_value = WINDOW_FPS_MIN;
+            max_value = WINDOW_FPS_MAX;
             break;
+        }
+
+        // Validate value
+        if (value < min_value || value > max_value) {
+            // Common error message template
+            constexpr std::string_view validate_error_msg{
+                "Window config option {} out of range [{}..{}] -> {}"};
+            auto error_msg = std::format(validate_error_msg, option_name,
+                                         min_value, max_value, value);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::InvalidValue, error_msg));
         }
 
         // Set value
@@ -247,15 +248,31 @@ Config::LoadRenderConfig(const tomlRoot &root) {
         // Get value
         int value = *find_value;
 
-        // Validate value
+        // Boundary values
+        int min_value = 0;
+        int max_value = 0;
+
+        // Update boundary values for each option
         switch (static_cast<RenderOption>(i)) {
         case RenderOption::BaseIter:
-            if (value <= 0) {
-                std::string error_msg{"Base iteration count must be positive"};
-                return std::unexpected(MandelbrotError(
-                    MandelbrotError::Code::InvalidValue, error_msg));
-            }
+            min_value = RENDER_BASE_ITER_MIN;
+            max_value = RENDER_BASE_ITER_MAX;
             break;
+        case RenderOption::BailoutPower:
+            min_value = RENDER_BAILOUT_POWER_MIN;
+            max_value = RENDER_BAILOUT_POWER_MAX;
+            break;
+        }
+
+        // Validate value
+        if (value < min_value || value > max_value) {
+            // Common error message template
+            constexpr std::string_view validate_error_msg{
+                "Render config option {} out of range [{}..{}] -> {}"};
+            auto error_msg = std::format(validate_error_msg, option_name,
+                                         min_value, max_value, value);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::InvalidValue, error_msg));
         }
 
         // Set value

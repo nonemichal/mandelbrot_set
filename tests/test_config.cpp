@@ -195,7 +195,7 @@ TEST_CASE("08 - Config::Load - invalid shaders config") {
 }
 
 TEST_CASE("09 - Config::Load - invalid window config") {
-    SUBCASE("Width too large") {
+    SUBCASE("Width value too large") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window1.toml");
         auto result = Config::Load(config_path);
@@ -206,7 +206,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Height too large") {
+    SUBCASE("Height value too large") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window2.toml");
         auto result = Config::Load(config_path);
@@ -217,7 +217,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("FPS too high") {
+    SUBCASE("FPS value too high") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window3.toml");
         auto result = Config::Load(config_path);
@@ -226,7 +226,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Width too small") {
+    SUBCASE("Width value too small") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window4.toml");
         auto result = Config::Load(config_path);
@@ -237,7 +237,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Height too small") {
+    SUBCASE("Height value too small") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window5.toml");
         auto result = Config::Load(config_path);
@@ -246,7 +246,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("FPS too low") {
+    SUBCASE("FPS value too low") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window6.toml");
         auto result = Config::Load(config_path);
@@ -257,7 +257,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Width as float") {
+    SUBCASE("Width value as float") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window7.toml");
         auto result = Config::Load(config_path);
@@ -268,7 +268,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Height as float") {
+    SUBCASE("Height value  as float") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window8.toml");
         auto result = Config::Load(config_path);
@@ -277,7 +277,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("FPS as float") {
+    SUBCASE("FPS value as float") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window9.toml");
         auto result = Config::Load(config_path);
@@ -288,7 +288,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Width as string") {
+    SUBCASE("Width value as string") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window10.toml");
         auto result = Config::Load(config_path);
@@ -299,7 +299,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Height as string") {
+    SUBCASE("Height value as string") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window11.toml");
         auto result = Config::Load(config_path);
@@ -308,7 +308,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("FPS as string") {
+    SUBCASE("FPS value as string") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_window12.toml");
         auto result = Config::Load(config_path);
@@ -331,7 +331,7 @@ TEST_CASE("09 - Config::Load - invalid window config") {
 }
 
 TEST_CASE("10 - Config::Load - invalid render config") {
-    SUBCASE("Base iter value not positive") {
+    SUBCASE("Base iter value too large") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_render1.toml");
         auto result = Config::Load(config_path);
@@ -342,7 +342,7 @@ TEST_CASE("10 - Config::Load - invalid render config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Base iter value not an int") {
+    SUBCASE("Bailout power too large") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_render2.toml");
         auto result = Config::Load(config_path);
@@ -353,9 +353,53 @@ TEST_CASE("10 - Config::Load - invalid render config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Wrong render options") {
+    SUBCASE("Base iter value too small") {
         auto config_path =
             CreateConfigPath("tests/configs/config_invalid_render3.toml");
+        auto result = Config::Load(config_path);
+
+        REQUIRE_FALSE(result.has_value());
+
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
+    }
+    SUBCASE("Bailout power too small") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render4.toml");
+        auto result = Config::Load(config_path);
+
+        REQUIRE_FALSE(result.has_value());
+
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
+    }
+    SUBCASE("Base iter value as string") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render5.toml");
+        auto result = Config::Load(config_path);
+
+        REQUIRE_FALSE(result.has_value());
+
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
+    }
+    SUBCASE("Bailout power as string") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render6.toml");
+        auto result = Config::Load(config_path);
+
+        REQUIRE_FALSE(result.has_value());
+
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
+    }
+    SUBCASE("Wrong render options") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render7.toml");
         auto result = Config::Load(config_path);
 
         const auto &error = result.error();

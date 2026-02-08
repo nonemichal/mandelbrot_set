@@ -94,6 +94,10 @@ class Config {
     static constexpr int WINDOW_SIZE_MAX = 16384;
     static constexpr int WINDOW_FPS_MIN = 1;
     static constexpr int WINDOW_FPS_MAX = 1000;
+    static constexpr int RENDER_BASE_ITER_MIN = 1;
+    static constexpr int RENDER_BASE_ITER_MAX = 5000;
+    static constexpr int RENDER_BAILOUT_POWER_MIN = 2;
+    static constexpr int RENDER_BAILOUT_POWER_MAX = 32;
 
     // Creates full shader paths from file name
     static std::filesystem::path
