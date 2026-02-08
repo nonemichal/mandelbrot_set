@@ -15,6 +15,9 @@
     X(Vertex, "vertex")                                                        \
     X(Fragment, "fragment")
 
+// Macro defining all render options
+#define RENDER_OPTION_LIST(X) X(BaseIter, "base_iter")
+
 // Macro defining all error codes types
 #define ERROR_CODE_LIST(X)                                                     \
     /* Referenced file does not exist */                                       \

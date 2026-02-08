@@ -7,3 +7,6 @@ fps = 60
 sdfsdf = ""
 csdc = "shaders/mandelbrot_set.frag"
 cvdsvd = ""
+
+[render]
+base_iter = 500

@@ -31,15 +31,15 @@ class App {
     void Run();
 
   private:
+    // Window
     int fps;
     raylib::Window window;
     raylib::Shader shader;
     // Texture
     raylib::RenderTexture render_texture;
     raylib::Texture texture;
-
-    void PrepareTexture();
-    void Draw();
+    // Render
+    int base_iter;
 
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;
@@ -47,4 +47,7 @@ class App {
         RGB::GenPaletteLCH<PALETTE_SIZE>()};
     std::array<raylib::Color, PALETTE_SIZE> color_palette;
     raylib::Texture palette_texture;
+
+    void PrepareTexture();
+    void Draw();
 };

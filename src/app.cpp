@@ -21,10 +21,14 @@ App::Instance(const std::string &title, std::string_view config_file) {
         return &*instance;
     }
 
+    // Create config path
+    const std::filesystem::path config_path =
+        std::filesystem::path(PROJECT_ROOT_PATH) / config_file;
+
     // Load the config file
     TraceLog(LOG_INFO, "MANDELBROT_SET: Loading config file -> %s",
-             config_file.data());
-    auto config_result = Config::Load(config_file);
+             config_path.c_str());
+    auto config_result = Config::Load(config_path);
 
     // If parsing did not succeed
     if (!config_result) {
@@ -48,7 +52,8 @@ App::App(const std::string &title, const Config &config)
              config.GetWindowValue(Config::WindowOption::Height),
              title),  // NOTE: Raylib window requires title as string
       shader(config.GetShaderPath(Config::ShaderType::Vertex),
-             config.GetShaderPath(Config::ShaderType::Fragment)) {
+             config.GetShaderPath(Config::ShaderType::Fragment)),
+      base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)) {
     window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
@@ -60,13 +65,17 @@ App::App(const std::string &title, const Config &config)
         raylib::RenderTexture::Load(window.GetWidth(), window.GetHeight());
     texture = render_texture.GetTexture();
 
-    // Prepare color palette
+    // Prepare color palette scaled to [0, 255]
+    static constexpr unsigned char color_max_value = 255;
     for (size_t i = 0; i < PALETTE_SIZE; ++i) {
-        color_palette.at(i) = Color{
-            static_cast<unsigned char>(GENERATED_PALETTE.at(i).r * 255.0F),
-            static_cast<unsigned char>(GENERATED_PALETTE.at(i).g * 255.0F),
-            static_cast<unsigned char>(GENERATED_PALETTE.at(i).b * 255.0F),
-            255};
+        color_palette.at(i) =
+            Color{static_cast<unsigned char>(GENERATED_PALETTE.at(i).r *
+                                             color_max_value),
+                  static_cast<unsigned char>(GENERATED_PALETTE.at(i).g *
+                                             color_max_value),
+                  static_cast<unsigned char>(GENERATED_PALETTE.at(i).b *
+                                             color_max_value),
+                  color_max_value};
     }
     Image palette_image(color_palette.data(), static_cast<int>(PALETTE_SIZE), 1,
                         1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
@@ -99,10 +108,10 @@ void App::Draw() {
     shader.BeginMode();
     shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
 
-    constexpr int base_iter = 1000;
     constexpr float zoom = 1.0;
     // Update max iter based on base iter and current zoom
-    const int max_iter = static_cast<int>(base_iter * (1 + std::log(zoom)));
+    const int max_iter =
+        static_cast<int>(static_cast<float>(base_iter) * (1 + std::log(zoom)));
     shader.SetValue(shader.GetLocation("zoom"), &zoom, SHADER_UNIFORM_FLOAT);
     shader.SetValue(shader.GetLocation("maxIter"), &max_iter,
                     SHADER_UNIFORM_INT);

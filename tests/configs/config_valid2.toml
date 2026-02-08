@@ -7,6 +7,9 @@ fps = 60
 vertex = ""
 fragment = "tests/configs/shader_valid.frag"
 
+[render]
+base_iter = 500
+
 [sdfsd]
 ssdf = 10
 sdccv = "sdfcs"

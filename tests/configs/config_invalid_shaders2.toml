@@ -6,3 +6,6 @@ fps = 60
 [shaders]
 vertex = ""
 fragment = 10
+
+[render]
+base_iter = 500

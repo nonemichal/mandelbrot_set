@@ -13,11 +13,7 @@
 
 // Loads the configuration file
 std::expected<Config, MandelbrotError>
-Config::Load(std::string_view config_file) {
-    // Create config path
-    const std::filesystem::path config_path =
-        std::filesystem::path(PROJECT_ROOT_PATH) / config_file;
-
+Config::Load(const std::filesystem::path &config_path) {
     // Validate config path
     if (!std::filesystem::exists(config_path)) {
         auto error_msg = std::format("Config file does not exist -> {}",
@@ -58,6 +54,12 @@ Config::Load(std::string_view config_file) {
         return std::unexpected(
             MandelbrotError(MandelbrotError::Code::ParseError, error_msg));
     }
+    // Check if render table exists
+    if (!HasTable(root, RENDER_TABLE_NAME)) {
+        auto error_msg = std::format(has_value_error_msg, RENDER_TABLE_NAME);
+        return std::unexpected(
+            MandelbrotError(MandelbrotError::Code::ParseError, error_msg));
+    }
 
     // Create an empty configuration object
     Config config{};
@@ -72,6 +74,12 @@ Config::Load(std::string_view config_file) {
     auto shader_res = config.LoadShaderConfig(root);
     if (!shader_res) {
         return std::unexpected(shader_res.error());
+    }
+
+    // Load render related configuration
+    auto render_res = config.LoadRenderConfig(root);
+    if (!render_res) {
+        return std::unexpected(render_res.error());
     }
 
     // Configuration loaded successfully
@@ -206,9 +214,61 @@ Config::LoadShaderConfig(const tomlRoot &root) {
     return {};
 }
 
+std::expected<void, MandelbrotError>
+Config::LoadRenderConfig(const tomlRoot &root) {
+    // Table with render config
+    const auto *const table_name = RENDER_TABLE_NAME.data();
+
+    // Iterate over all expected render configuration options
+    for (size_t i = 0; i < RENDER_OPTIONS_COUNT; i++) {
+        const auto *const option_name = RENDER_OPTIONS_STR.at(i).data();
+
+        // Try to find the option
+        // NOTE: type_error is thrown when the value has an invalid type
+        std::optional<int> find_value;
+        try {
+            find_value =
+                toml::find<std::optional<int>>(root, table_name, option_name);
+        } catch (const toml::type_error &) {
+            auto error_msg = std::format(
+                "Invalid type for option '{}', expected int", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::InvalidValue, error_msg));
+        }
+
+        // If the option is missing return error
+        if (!find_value.has_value()) {
+            auto error_msg =
+                std::format("Missing render config option -> {}", option_name);
+            return std::unexpected(MandelbrotError(
+                MandelbrotError::Code::MissingOption, error_msg));
+        }
+
+        // Get value
+        int value = *find_value;
+
+        // Validate value
+        switch (static_cast<RenderOption>(i)) {
+        case RenderOption::BaseIter:
+            if (value <= 0) {
+                std::string error_msg{"Base iteration count must be positive"};
+                return std::unexpected(MandelbrotError(
+                    MandelbrotError::Code::InvalidValue, error_msg));
+            }
+            break;
+        }
+
+        // Set value
+        render_config.at(i) = value;
+        TraceLog(LOG_INFO, "MANDELBROT_SET: Setting %s %s -> %d", table_name,
+                 option_name, value);
+    }
+    return {};
+}
+
 std::filesystem::path
 Config::CreateShaderPath(std::string_view shader_file_name) {
-    // NOTE: Passing an empty string means "no shader" for that stage
+    // NOTE: Passing an empty string means "no shader"
     if (shader_file_name.empty()) {
         return {};  // empty path
     }
@@ -220,14 +280,18 @@ Config::CreateShaderPath(std::string_view shader_file_name) {
 
 int Config::GetWindowValue(WindowOption option) const {
     const auto index = static_cast<size_t>(option);
-    assert(index < window_config.size());
     const auto value = window_config.at(index);
     return value;
 }
 
 const std::filesystem::path &Config::GetShaderPath(ShaderType type) const {
     const auto index = static_cast<size_t>(type);
-    assert(index < shader_paths.size());
     const auto &value = shader_paths.at(index);
+    return value;
+}
+
+int Config::GetRenderValue(RenderOption option) const {
+    const auto index = static_cast<size_t>(option);
+    const auto value = render_config.at(index);
     return value;
 }

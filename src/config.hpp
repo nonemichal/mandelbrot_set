@@ -25,12 +25,19 @@ class Config {
         SHADER_TYPE_LIST(X)
 #undef X
     };
+    enum class RenderOption : std::uint8_t {
+#define X(name, str) name,
+        RENDER_OPTION_LIST(X)
+#undef X
+    };
 
     // Numbers of configuration options
     static constexpr size_t WINDOW_OPTIONS_COUNT{
         0 WINDOW_OPTION_LIST(X_ENUM_COUNT)};
     static constexpr size_t SHADER_TYPES_COUNT{
         0 SHADER_TYPE_LIST(X_ENUM_COUNT)};
+    static constexpr size_t RENDER_OPTIONS_COUNT{
+        0 RENDER_OPTION_LIST(X_ENUM_COUNT)};
 
     // Array of string names for window options
     static constexpr std::array<std::string_view, WINDOW_OPTIONS_COUNT>
@@ -48,28 +55,41 @@ class Config {
 #undef X
         };
 
+    // Array of string names for render options
+    static constexpr std::array<std::string_view, RENDER_OPTIONS_COUNT>
+        RENDER_OPTIONS_STR{
+#define X(name, str) str,
+            RENDER_OPTION_LIST(X)
+#undef X
+        };
+
     // Table names in configuration file
     static constexpr std::string_view WINDOW_TABLE_NAME{"window"};
     static constexpr std::string_view SHADER_TABLE_NAME{"shaders"};
+    static constexpr std::string_view RENDER_TABLE_NAME{"render"};
 
     // Project root path
     static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
 
     // Loads the configuration file
     [[nodiscard]] static std::expected<Config, MandelbrotError>
-    Load(std::string_view config_file);
+    Load(const std::filesystem::path &config_path);
 
     // Getters
     [[nodiscard]] int GetWindowValue(WindowOption option) const;
     [[nodiscard]] const std::filesystem::path &
     GetShaderPath(ShaderType type) const;
+    [[nodiscard]] int GetRenderValue(
+        RenderOption option) const;  // NOTE: Currently returned type is always
+                                     // int but it can change in the future
 
   private:
     // Config values
     std::array<int, WINDOW_OPTIONS_COUNT> window_config{};
     std::array<std::filesystem::path, SHADER_TYPES_COUNT> shader_paths{};
+    std::array<int, RENDER_OPTIONS_COUNT> render_config{};
 
-    // Window config boundary values
+    // Config boundary values
     static constexpr int WINDOW_SIZE_MIN = 64;
     static constexpr int WINDOW_SIZE_MAX = 16384;
     static constexpr int WINDOW_FPS_MIN = 1;
@@ -86,6 +106,8 @@ class Config {
     static bool HasTable(const tomlRoot &root, std::string_view table_name);
 
     // Load section from config file
+    // TODO: One universal function should be written
     std::expected<void, MandelbrotError> LoadWindowConfig(const tomlRoot &root);
     std::expected<void, MandelbrotError> LoadShaderConfig(const tomlRoot &root);
+    std::expected<void, MandelbrotError> LoadRenderConfig(const tomlRoot &root);
 };

@@ -6,3 +6,6 @@ fps = 60
 [shaders.shaders]
 vertex = ""
 fragment = "tests/configs/shader_valid.frag"
+
+[render.render]
+base_iter = 500

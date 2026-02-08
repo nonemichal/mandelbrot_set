@@ -6,3 +6,6 @@ fdsv = 60
 [shaders]
 vertex = ""
 fragment = "tests/configs/shader_valid.frag"
+
+[render]
+base_iter = 500

@@ -1,10 +1,20 @@
+#include <filesystem>
+#include <string_view>
+
 #include "doctest.h"
 
 #include "config.hpp"
 
+static std::filesystem::path CreateConfigPath(std::string_view config_file) {
+    std::filesystem::path config_path =
+        std::filesystem::path(PROJECT_ROOT_PATH) / config_file;
+    return config_path;
+}
+
 TEST_CASE("01 - Config::Load - valid config loads correctly") {
     SUBCASE("Valid config") {
-        auto result = Config::Load("tests/configs/config_valid1.toml");
+        auto config_path = CreateConfigPath("tests/configs/config_valid1.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE(result.has_value());
 
@@ -23,9 +33,12 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
             config.GetShaderPath(Config::ShaderType::Fragment));
 
         CHECK_EQ(actual_path, expected_path);
+
+        CHECK_EQ(config.GetRenderValue(Config::RenderOption::BaseIter), 500);
     }
     SUBCASE("Valid Config with additional settings") {
-        auto result = Config::Load("tests/configs/config_valid2.toml");
+        auto config_path = CreateConfigPath("tests/configs/config_valid2.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE(result.has_value());
 
@@ -44,11 +57,14 @@ TEST_CASE("01 - Config::Load - valid config loads correctly") {
             config.GetShaderPath(Config::ShaderType::Fragment));
 
         CHECK_EQ(actual_path, expected_path);
+
+        CHECK_EQ(config.GetRenderValue(Config::RenderOption::BaseIter), 500);
     }
 }
 
 TEST_CASE("02 - Config::Load - missing config file") {
-    auto result = Config::Load("tests/configs/does_not_exist.toml");
+    auto config_path = CreateConfigPath("tests/configs/does_not_exist.toml");
+    auto result = Config::Load(config_path);
 
     REQUIRE_FALSE(result.has_value());
 
@@ -58,7 +74,8 @@ TEST_CASE("02 - Config::Load - missing config file") {
 }
 
 TEST_CASE("03 - Config::Load - config file not parsable") {
-    auto result = Config::Load("tests/configs/config_no_parse.toml");
+    auto config_path = CreateConfigPath("tests/configs/config_no_parse.toml");
+    auto result = Config::Load(config_path);
 
     REQUIRE_FALSE(result.has_value());
 
@@ -68,7 +85,8 @@ TEST_CASE("03 - Config::Load - config file not parsable") {
 }
 
 TEST_CASE("04 - Config::Load - missing window section") {
-    auto result = Config::Load("tests/configs/config_no_window.toml");
+    auto config_path = CreateConfigPath("tests/configs/config_no_window.toml");
+    auto result = Config::Load(config_path);
 
     REQUIRE_FALSE(result.has_value());
 
@@ -78,7 +96,8 @@ TEST_CASE("04 - Config::Load - missing window section") {
 }
 
 TEST_CASE("05 - Config::Load - missing shader section") {
-    auto result = Config::Load("tests/configs/config_no_shader.toml");
+    auto config_path = CreateConfigPath("tests/configs/config_no_shader.toml");
+    auto result = Config::Load(config_path);
 
     REQUIRE_FALSE(result.has_value());
 
@@ -87,9 +106,22 @@ TEST_CASE("05 - Config::Load - missing shader section") {
     MESSAGE(error.GetMessage());
 }
 
-TEST_CASE("06 - Config::Load - invalid config layout") {
+TEST_CASE("06 - Config::Load - missing render section") {
+    auto config_path = CreateConfigPath("tests/configs/config_no_render.toml");
+    auto result = Config::Load(config_path);
+
+    REQUIRE_FALSE(result.has_value());
+
+    const auto &error = result.error();
+    CHECK_EQ(error.GetCode(), MandelbrotError::Code::ParseError);
+    MESSAGE(error.GetMessage());
+}
+
+TEST_CASE("07 - Config::Load - invalid config layout") {
     SUBCASE("Wrong table names") {
-        auto result = Config::Load("tests/configs/config_invalid_layout1.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_layout1.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -98,7 +130,9 @@ TEST_CASE("06 - Config::Load - invalid config layout") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Nested tables") {
-        auto result = Config::Load("tests/configs/config_invalid_layout2.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_layout2.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -107,14 +141,18 @@ TEST_CASE("06 - Config::Load - invalid config layout") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Window as array of tables") {
-        auto result = Config::Load("tests/configs/config_invalid_layout3.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_layout3.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::ParseError);
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Shaders as array of tables") {
-        auto result = Config::Load("tests/configs/config_invalid_layout4.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_layout4.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::ParseError);
@@ -122,10 +160,11 @@ TEST_CASE("06 - Config::Load - invalid config layout") {
     }
 }
 
-TEST_CASE("07 - Config::Load - invalid shaders config") {
+TEST_CASE("08 - Config::Load - invalid shaders config") {
     SUBCASE("Invalid fragment path") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_shaders1.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_shaders1.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -133,9 +172,10 @@ TEST_CASE("07 - Config::Load - invalid shaders config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::FileNotFound);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Fragment as int") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_shaders2.toml");
+    SUBCASE("Fragment not a path") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_shaders2.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -143,9 +183,10 @@ TEST_CASE("07 - Config::Load - invalid shaders config") {
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
-    SUBCASE("Wrong shaders options") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_shaders3.toml");
+    SUBCASE("Wrong shader options") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_shaders3.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::MissingOption);
@@ -153,9 +194,11 @@ TEST_CASE("07 - Config::Load - invalid shaders config") {
     }
 }
 
-TEST_CASE("08 - Config::Load - invalid window config") {
+TEST_CASE("09 - Config::Load - invalid window config") {
     SUBCASE("Width too large") {
-        auto result = Config::Load("tests/configs/config_invalid_window1.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window1.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -164,7 +207,9 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Height too large") {
-        auto result = Config::Load("tests/configs/config_invalid_window2.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window2.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -173,14 +218,18 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("FPS too high") {
-        auto result = Config::Load("tests/configs/config_invalid_window3.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window3.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Width too small") {
-        auto result = Config::Load("tests/configs/config_invalid_window4.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window4.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -189,14 +238,18 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Height too small") {
-        auto result = Config::Load("tests/configs/config_invalid_window5.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window5.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
     SUBCASE("FPS too low") {
-        auto result = Config::Load("tests/configs/config_invalid_window6.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window6.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -205,7 +258,9 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Width as float") {
-        auto result = Config::Load("tests/configs/config_invalid_window7.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window7.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -214,14 +269,18 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Height as float") {
-        auto result = Config::Load("tests/configs/config_invalid_window8.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window8.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
     SUBCASE("FPS as float") {
-        auto result = Config::Load("tests/configs/config_invalid_window9.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window9.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -230,8 +289,9 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Width as string") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_window10.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window10.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -240,16 +300,18 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Height as string") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_window11.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window11.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
         MESSAGE(error.GetMessage());
     }
     SUBCASE("FPS as string") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_window12.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window12.toml");
+        auto result = Config::Load(config_path);
 
         REQUIRE_FALSE(result.has_value());
 
@@ -258,8 +320,9 @@ TEST_CASE("08 - Config::Load - invalid window config") {
         MESSAGE(error.GetMessage());
     }
     SUBCASE("Wrong window options") {
-        auto result =
-            Config::Load("tests/configs/config_invalid_window13.toml");
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_window13.toml");
+        auto result = Config::Load(config_path);
 
         const auto &error = result.error();
         CHECK_EQ(error.GetCode(), MandelbrotError::Code::MissingOption);
@@ -267,105 +330,36 @@ TEST_CASE("08 - Config::Load - invalid window config") {
     }
 }
 
-TEST_CASE("09 - Config::GetWindowValue - window values from valid config") {
-    SUBCASE("Width value") {
-        auto result = Config::Load("tests/configs/config_valid1.toml");
+TEST_CASE("10 - Config::Load - invalid render config") {
+    SUBCASE("Base iter value not positive") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render1.toml");
+        auto result = Config::Load(config_path);
 
-        REQUIRE(result.has_value());
+        REQUIRE_FALSE(result.has_value());
 
-        const auto &config = result.value();
-
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
-
-        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-
-        const auto expected_path = std::filesystem::canonical(
-            std::filesystem::path(PROJECT_ROOT_PATH) /
-            "tests/configs/shader_valid.frag");
-        const auto actual_path = std::filesystem::canonical(
-            config.GetShaderPath(Config::ShaderType::Fragment));
-
-        CHECK_EQ(actual_path, expected_path);
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
     }
-    SUBCASE("Height value") {
-        auto result = Config::Load("tests/configs/config_valid2.toml");
+    SUBCASE("Base iter value not an int") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render2.toml");
+        auto result = Config::Load(config_path);
 
-        REQUIRE(result.has_value());
+        REQUIRE_FALSE(result.has_value());
 
-        const auto &config = result.value();
-
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
-
-        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-
-        const auto expected_path = std::filesystem::canonical(
-            std::filesystem::path(PROJECT_ROOT_PATH) /
-            "tests/configs/shader_valid.frag");
-        const auto actual_path = std::filesystem::canonical(
-            config.GetShaderPath(Config::ShaderType::Fragment));
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::InvalidValue);
+        MESSAGE(error.GetMessage());
     }
-    SUBCASE("FPS value") {
-        auto result = Config::Load("tests/configs/config_valid2.toml");
+    SUBCASE("Wrong render options") {
+        auto config_path =
+            CreateConfigPath("tests/configs/config_invalid_render3.toml");
+        auto result = Config::Load(config_path);
 
-        REQUIRE(result.has_value());
-
-        const auto &config = result.value();
-
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
-
-        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-
-        const auto expected_path = std::filesystem::canonical(
-            std::filesystem::path(PROJECT_ROOT_PATH) /
-            "tests/configs/shader_valid.frag");
-        const auto actual_path = std::filesystem::canonical(
-            config.GetShaderPath(Config::ShaderType::Fragment));
-    }
-}
-
-TEST_CASE("10 - Config::GetShaderPath - Shaders paths from valid config") {
-    SUBCASE("Vertex path") {
-        auto result = Config::Load("tests/configs/config_valid1.toml");
-
-        REQUIRE(result.has_value());
-
-        const auto &config = result.value();
-
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
-
-        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-
-        const auto expected_path = std::filesystem::canonical(
-            std::filesystem::path(PROJECT_ROOT_PATH) /
-            "tests/configs/shader_valid.frag");
-        const auto actual_path = std::filesystem::canonical(
-            config.GetShaderPath(Config::ShaderType::Fragment));
-    }
-    SUBCASE("Fragment path") {
-        auto result = Config::Load("tests/configs/config_valid2.toml");
-
-        REQUIRE(result.has_value());
-
-        const auto &config = result.value();
-
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Width), 1280);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Height), 720);
-        CHECK_EQ(config.GetWindowValue(Config::WindowOption::Fps), 60);
-
-        CHECK(config.GetShaderPath(Config::ShaderType::Vertex).empty());
-
-        const auto expected_path = std::filesystem::canonical(
-            std::filesystem::path(PROJECT_ROOT_PATH) /
-            "tests/configs/shader_valid.frag");
-        const auto actual_path = std::filesystem::canonical(
-            config.GetShaderPath(Config::ShaderType::Fragment));
+        const auto &error = result.error();
+        CHECK_EQ(error.GetCode(), MandelbrotError::Code::MissingOption);
+        MESSAGE(error.GetMessage());
     }
 }

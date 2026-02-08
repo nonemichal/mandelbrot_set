@@ -1,9 +1,12 @@
 [window] # Int values
-# Better to keep 7/4 proportions
+# Best to keep 7/5 proportions
 width = 1400
 height = 1000
 fps = 60
 
-[shaders] # String (paths) values
+[shaders] # Path values
 vertex = ""
 fragment = "shaders/mandelbrot_set.frag"
+
+[render] # Int values
+base_iter = 500 # Int
