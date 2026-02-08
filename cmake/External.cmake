@@ -6,7 +6,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/raysan5/raylib.git
     GIT_TAG 5.5
     SOURCE_DIR
-    ${PROJECT_SOURCE_DIR}/external/raylib
+    ${CMAKE_SOURCE_DIR}/external/raylib
 )
 
 # raylib-cpp
@@ -15,7 +15,16 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/RobLoach/raylib-cpp.git
     GIT_TAG v5.5.0
     SOURCE_DIR
-    ${PROJECT_SOURCE_DIR}/external/raylib-cpp
+    ${CMAKE_SOURCE_DIR}/external/raylib-cpp
+)
+
+# raygui
+FetchContent_Declare(
+    raygui
+    GIT_REPOSITORY https://github.com/raysan5/raygui.git
+    GIT_TAG 4.0
+    SOURCE_DIR
+    ${CMAKE_SOURCE_DIR}/external/raygui
 )
 
 # toml11
@@ -24,7 +33,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
     GIT_TAG v4.4.0
     SOURCE_DIR
-    ${PROJECT_SOURCE_DIR}/external/toml11
+    ${CMAKE_SOURCE_DIR}/external/toml11
 )
 
 # doctest
@@ -33,7 +42,13 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/doctest/doctest.git
     GIT_TAG v2.4.12
     SOURCE_DIR
-    ${PROJECT_SOURCE_DIR}/external/doctest
+    ${CMAKE_SOURCE_DIR}/external/doctest
 )
 
-FetchContent_MakeAvailable(raylib raylib-cpp toml11 doctest)
+FetchContent_MakeAvailable(
+    raylib
+    raylib-cpp
+    raygui
+    toml11
+    doctest
+)

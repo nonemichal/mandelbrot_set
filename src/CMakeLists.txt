@@ -9,7 +9,10 @@ set(MANDELBROT_CORE_SOURCES app.cpp config.cpp)
 add_library(mandelbrot_core STATIC ${MANDELBROT_CORE_SOURCES})
 
 # Expose headers
-target_include_directories(mandelbrot_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(
+    mandelbrot_core
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/external/raygui/src
+)
 
 # Apply warning flags
 target_compile_options(mandelbrot_core PUBLIC ${PROJECT_WARNING_FLAGS})
