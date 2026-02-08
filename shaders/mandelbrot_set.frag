@@ -7,10 +7,12 @@ out vec4 fragColor;
 // Color palette
 uniform sampler2D uColorPalette;
 
+uniform float zoom;
+uniform int maxIter;
+
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
-const float escapeVal = 4;
-const int maxIter = 50;
+const float bailoutRadius = (1 << 16); // Escape value
 // Y scaled to [-1.25, 1.25]
 const float minY = -1.25;
 const float maxY = 1.25;
@@ -30,7 +32,7 @@ void main() {
 
   // Optimized escape algorithm
   int iter = 0;
-  while (z2.x + z2.y <= escapeVal && iter < maxIter) {
+  while (z2.x + z2.y <= bailoutRadius && iter < maxIter) {
     z2.x = z.x * z.x;
     z2.y = z.y * z.y;
     z.y = 2.0 * z.x * z.y + c.y;
@@ -38,13 +40,22 @@ void main() {
     iter++;
   }
 
-  // Linear interpolation
+  // Avoid floating point issues
   float logZn = log(z.x * z.x + z.y * z.y) / 2.0;
   float nu = log(logZn / log(2.0)) / log(2.0);
-  float smoothIter = float(iter) + 1.0 - nu;
-  float t = smoothIter / float(maxIter);
-  t = clamp(t, 0.0, 1.0);
+  float fixedIter = float(iter) + 1.0 - nu;
+  float t = fixedIter / float(maxIter);
 
-  vec3 color = texture(uColorPalette, vec2(t, 0.5)).rgb;
+  // Two nearest palette indices
+  int index1 = int(floor(fixedIter));
+  int index2 = min(index1 + 1, maxIter);
+
+  // Fetch colors
+  vec3 color1 = texture(uColorPalette, vec2(float(index1) / float(maxIter), 0.5)).rgb;
+  vec3 color2 = texture(uColorPalette, vec2(float(index2) / float(maxIter), 0.5)).rgb;
+
+  // Interpolate color
+  float frac = fixedIter - floor(fixedIter);
+  vec3 color = mix(color1, color2, frac);
   fragColor = vec4(color, 1.0);
 }

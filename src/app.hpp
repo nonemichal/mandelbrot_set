@@ -43,7 +43,8 @@ class App {
 
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;
-    static constexpr auto HSV_PALETTE = RGB::GenPaletteHSV<PALETTE_SIZE>();
+    const std::array<RGB, PALETTE_SIZE> GENERATED_PALETTE{
+        RGB::GenPaletteLCH<PALETTE_SIZE>()};
     std::array<raylib::Color, PALETTE_SIZE> color_palette;
     raylib::Texture palette_texture;
 };

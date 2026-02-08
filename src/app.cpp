@@ -1,5 +1,6 @@
 #include "app.hpp"
 
+#include <cmath>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
@@ -62,9 +63,10 @@ App::App(const std::string &title, const Config &config)
     // Prepare color palette
     for (size_t i = 0; i < PALETTE_SIZE; ++i) {
         color_palette.at(i) = Color{
-            static_cast<unsigned char>(HSV_PALETTE.at(i).r * 255.0F),
-            static_cast<unsigned char>(HSV_PALETTE.at(i).g * 255.0F),
-            static_cast<unsigned char>(HSV_PALETTE.at(i).b * 255.0F), 255};
+            static_cast<unsigned char>(GENERATED_PALETTE.at(i).r * 255.0F),
+            static_cast<unsigned char>(GENERATED_PALETTE.at(i).g * 255.0F),
+            static_cast<unsigned char>(GENERATED_PALETTE.at(i).b * 255.0F),
+            255};
     }
     Image palette_image(color_palette.data(), static_cast<int>(PALETTE_SIZE), 1,
                         1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
@@ -96,6 +98,15 @@ void App::Draw() {
     window.ClearBackground(BLACK);
     shader.BeginMode();
     shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
+
+    constexpr int base_iter = 1000;
+    constexpr float zoom = 1.0;
+    // Update max iter based on base iter and current zoom
+    const int max_iter = static_cast<int>(base_iter * (1 + std::log(zoom)));
+    shader.SetValue(shader.GetLocation("zoom"), &zoom, SHADER_UNIFORM_FLOAT);
+    shader.SetValue(shader.GetLocation("maxIter"), &max_iter,
+                    SHADER_UNIFORM_INT);
+
     static const raylib::Vector2 pos{0.0, 0.0};
     texture.Draw(pos);
     shader.EndMode();
