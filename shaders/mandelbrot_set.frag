@@ -10,6 +10,8 @@ uniform sampler2D uColorPalette;
 uniform float zoom;
 uniform int maxIter;
 uniform int bailoutPower;
+uniform int paletteSize;
+uniform bool scaleIter;
 
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
@@ -45,10 +47,20 @@ void main() {
   float logZn = log(z.x * z.x + z.y * z.y) / 2.0;
   float nu = log(logZn / log(2.0)) / log(2.0);
   float fixedIter = float(iter) + 1.0 - nu;
-  float t = fixedIter / float(maxIter);
+
+  int indexVal;
+  if (scaleIter) {
+    // Scale iter value based on palette size
+    float t = fixedIter / float(maxIter);
+    int paletteIter = int(floor(t * paletteSize));
+    indexVal = paletteIter;
+  } else {
+    // Use not normalized value
+    indexVal = int(floor(fixedIter));
+  }
 
   // Two nearest palette indices
-  int index1 = int(floor(fixedIter));
+  int index1 = indexVal;
   int index2 = min(index1 + 1, maxIter);
 
   // Fetch colors

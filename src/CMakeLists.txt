@@ -3,7 +3,7 @@
 # ============================================================
 
 # Source files for the core library
-set(MANDELBROT_CORE_SOURCES app.cpp config.cpp)
+set(MANDELBROT_CORE_SOURCES app.cpp config.cpp raygui_impl.cpp ui.cpp)
 
 # Create static library
 add_library(mandelbrot_core STATIC ${MANDELBROT_CORE_SOURCES})
@@ -13,6 +13,9 @@ target_include_directories(
     mandelbrot_core
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/external/raygui/src
 )
+
+# Disable warnings for raygui_impl.cpp
+set_source_files_properties(raygui_impl.cpp PROPERTIES COMPILE_FLAGS "-w")
 
 # Apply warning flags
 target_compile_options(mandelbrot_core PUBLIC ${PROJECT_WARNING_FLAGS})

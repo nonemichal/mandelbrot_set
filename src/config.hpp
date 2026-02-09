@@ -71,6 +71,16 @@ class Config {
     // Project root path
     static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
 
+    // Config boundary values
+    static constexpr int WINDOW_SIZE_MIN = 64;
+    static constexpr int WINDOW_SIZE_MAX = 16384;
+    static constexpr int WINDOW_FPS_MIN = 1;
+    static constexpr int WINDOW_FPS_MAX = 1000;
+    static constexpr int RENDER_BASE_ITER_MIN = 1;
+    static constexpr int RENDER_BASE_ITER_MAX = 500;
+    static constexpr int RENDER_BAILOUT_POWER_MIN = 2;
+    static constexpr int RENDER_BAILOUT_POWER_MAX = 30;
+
     // Loads the configuration file
     [[nodiscard]] static std::expected<Config, MandelbrotError>
     Load(const std::filesystem::path &config_path);
@@ -88,16 +98,6 @@ class Config {
     std::array<int, WINDOW_OPTIONS_COUNT> window_config{};
     std::array<std::filesystem::path, SHADER_TYPES_COUNT> shader_paths{};
     std::array<int, RENDER_OPTIONS_COUNT> render_config{};
-
-    // Config boundary values
-    static constexpr int WINDOW_SIZE_MIN = 64;
-    static constexpr int WINDOW_SIZE_MAX = 16384;
-    static constexpr int WINDOW_FPS_MIN = 1;
-    static constexpr int WINDOW_FPS_MAX = 1000;
-    static constexpr int RENDER_BASE_ITER_MIN = 1;
-    static constexpr int RENDER_BASE_ITER_MAX = 5000;
-    static constexpr int RENDER_BAILOUT_POWER_MIN = 2;
-    static constexpr int RENDER_BAILOUT_POWER_MAX = 32;
 
     // Creates full shader paths from file name
     static std::filesystem::path

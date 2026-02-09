@@ -7,6 +7,7 @@
 #include "config.hpp"
 #include "mandelbrot_error.hpp"
 #include "rgb.hpp"
+#include "ui.hpp"
 
 class App {
   public:
@@ -42,6 +43,8 @@ class App {
     int base_iter;
     int bailout_power;
 
+    UI ui;
+
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;
     const std::array<RGB, PALETTE_SIZE> GENERATED_PALETTE{
@@ -50,5 +53,6 @@ class App {
     raylib::Texture palette_texture;
 
     void PrepareTexture();
+    void RenderShader();
     void Draw();
 };

@@ -103,14 +103,11 @@ void App::PrepareTexture() {
     render_texture.EndMode();
 }
 
-// Draw the saved texture and render shaders
-void App::Draw() {
-    window.BeginDrawing();
-    window.ClearBackground(BLACK);
+void App::RenderShader() {
     shader.BeginMode();
     shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
-
     constexpr float zoom = 1.0;
+    constexpr bool scale_iter = true;
     // Update max iter based on base iter and current zoom
     const int max_iter =
         static_cast<int>(static_cast<float>(base_iter) * (1 + std::log(zoom)));
@@ -119,9 +116,22 @@ void App::Draw() {
                     SHADER_UNIFORM_INT);
     shader.SetValue(shader.GetLocation("bailoutPower"), &bailout_power,
                     SHADER_UNIFORM_INT);
-
+    shader.SetValue(shader.GetLocation("paletteSize"), &PALETTE_SIZE,
+                    SHADER_UNIFORM_INT);
+    shader.SetValue(shader.GetLocation("scaleIter"), &scale_iter,
+                    SHADER_UNIFORM_INT);
     static const raylib::Vector2 pos{0.0, 0.0};
     texture.Draw(pos);
     shader.EndMode();
+}
+
+// Draw the saved texture and render shaders
+void App::Draw() {
+    window.BeginDrawing();
+    window.ClearBackground(BLACK);
+    RenderShader();
+    ui.Update();
+    base_iter = static_cast<int>(ui.GetBaseIterVal());
+    bailout_power = static_cast<int>(ui.GetBailoutPowerVal());
     window.EndDrawing();
 }
