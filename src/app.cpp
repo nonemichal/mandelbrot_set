@@ -43,6 +43,8 @@ App::App(const std::string &title, const Config &config)
              title),  // NOTE: Raylib window requires title as string
       shader(config.GetShaderPath(Config::ShaderType::Vertex),
              config.GetShaderPath(Config::ShaderType::Fragment)),
+
+      ui(config),
       // NOTE: The shader is designed to work best with a 7:5 (width/height)
       // aspect ratio. Assuming the screen itself has a ~7:6 ratio, limiting
       // the render height to 5/6 of the window keeps the shader rendering
@@ -51,7 +53,7 @@ App::App(const std::string &title, const Config &config)
       render_height(static_cast<std::size_t>(window.GetHeight() * 5 / 6)),
       base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)),
       bailout_power(config.GetRenderValue(Config::RenderOption::BailoutPower)),
-      ui(config) {
+      full_color_palette(ui.GetFullColorPaletteValue()) {
     window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
@@ -101,7 +103,6 @@ void App::PrepareTexture() {
 
 void App::RenderShader() {
     constexpr float zoom = 1.0;
-    constexpr bool scale_iter = true;
     // Update max iter based on base iter and current zoom
     const int max_iter =
         static_cast<int>(static_cast<float>(base_iter) * std::pow(zoom, 0.1));
@@ -115,7 +116,7 @@ void App::RenderShader() {
                     SHADER_UNIFORM_INT);
     shader.SetValue(shader.GetLocation("paletteSize"), &PALETTE_SIZE,
                     SHADER_UNIFORM_INT);
-    shader.SetValue(shader.GetLocation("scaleIter"), &scale_iter,
+    shader.SetValue(shader.GetLocation("scaleIter"), &full_color_palette,
                     SHADER_UNIFORM_INT);
     texture.Draw();
     shader.EndMode();
@@ -128,7 +129,8 @@ void App::Draw() {
     RenderShader();
     ui.Update();
     // Update values from UI
-    base_iter = static_cast<int>(ui.GetBaseIterVal());
-    bailout_power = static_cast<int>(ui.GetBailoutPowerVal());
+    base_iter = static_cast<int>(ui.GetBaseIterValue());
+    bailout_power = static_cast<int>(ui.GetBailoutPowerValue());
+    full_color_palette = ui.GetFullColorPaletteValue();
     window.EndDrawing();
 }

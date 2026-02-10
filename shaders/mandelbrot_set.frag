@@ -55,7 +55,7 @@ void main() {
     int paletteIter = int(floor(t * paletteSize));
     indexVal = paletteIter;
   } else {
-    // Use not normalized value
+    // Use not scaled value
     indexVal = int(floor(fixedIter));
   }
 

@@ -17,7 +17,7 @@ UI::UI(const Config &config)
                     .y = static_cast<float>(screen_height - (font_size * 3)),
                     .width = static_cast<float>(screen_width / 2),
                     .height = static_cast<float>(font_size) * 1.5F}),
-      slider_base_iter(base_iter_bounds, "Base iter", &base_iter_val,
+      base_iter_slider(base_iter_bounds, "Base iter", &base_iter_val,
                        Config::RENDER_BASE_ITER_MIN,
                        Config::RENDER_BASE_ITER_MAX),
       bailout_power_val(static_cast<float>(
@@ -27,23 +27,30 @@ UI::UI(const Config &config)
                     .y = static_cast<float>(screen_height - (font_size * 6)),
                     .width = base_iter_bounds.width,
                     .height = base_iter_bounds.height}),
-      slider_bailtout_power(
+      bailtout_power_slider(
           bailout_power_bounds, "Bailout power", &bailout_power_val,
-          Config::RENDER_BAILOUT_POWER_MIN, Config::RENDER_BAILOUT_POWER_MAX) {
+          Config::RENDER_BAILOUT_POWER_MIN, Config::RENDER_BAILOUT_POWER_MAX),
+      full_color_palette_bounds(
+          Rectangle{.x = (base_iter_bounds.x + base_iter_bounds.width) * 1.2F,
+                    .y = base_iter_bounds.y,
+                    .width = base_iter_bounds.height,
+                    .height = base_iter_bounds.height}),
+      full_color_palette_checkbox(full_color_palette_bounds,
+                                  "Full color palette",
+                                  &full_color_palette_val) {
     GuiSetStyle(DEFAULT, TEXT_SIZE, static_cast<int>(font_size));
 }
 
 void UI::Update() {
-    // DrawRectangleRec(BASE_ITER_BOUNDS, Fade(DARKGRAY, 0.5f));
-    slider_base_iter.Draw();
-    // DrawRectangleRec(BAILOUT_POWER_BOUNDS, Fade(DARKGRAY, 0.5f));
-    slider_bailtout_power.Draw();
-}
-
-float UI::GetBaseIterVal() const { return slider_base_iter.GetValue(); }
-
-float UI::GetBailoutPowerVal() const {
-    return slider_bailtout_power.GetValue();
+    base_iter_slider.Draw();
+    bailtout_power_slider.Draw();
+    full_color_palette_checkbox.Draw();
 }
 
 std::size_t UI::GetFontSize() const { return font_size; }
+
+float UI::GetBaseIterValue() const { return base_iter_val; }
+
+float UI::GetBailoutPowerValue() const { return bailout_power_val; }
+
+bool UI::GetFullColorPaletteValue() const { return full_color_palette_val; }

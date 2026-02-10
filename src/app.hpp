@@ -43,13 +43,14 @@ class App {
     // Texture
     raylib::RenderTexture render_texture;
     raylib::Texture texture;
+    // UI section
+    UI ui;
     // Render
     std::size_t render_width;
     std::size_t render_height;
     int base_iter;
     int bailout_power;
-    // UI section
-    UI ui;
+    bool full_color_palette;
 
     // Color palette
     static constexpr std::size_t PALETTE_SIZE = 1024;
