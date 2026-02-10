@@ -1,9 +1,13 @@
 #pragma once
 
+#include <cmath>
 #include <string_view>
 
 #include "raylib-cpp.hpp"
+#include "raylib.h"
 
+#include "RenderTexture.hpp"
+#include "Window.hpp"
 #include "config.hpp"
 #include "mandelbrot_error.hpp"
 #include "rgb.hpp"
@@ -40,9 +44,11 @@ class App {
     raylib::RenderTexture render_texture;
     raylib::Texture texture;
     // Render
+    std::size_t render_width;
+    std::size_t render_height;
     int base_iter;
     int bailout_power;
-
+    // UI section
     UI ui;
 
     // Color palette

@@ -3,9 +3,11 @@
 #include <array>
 #include <cstdint>
 #include <expected>
+#include <format>
 #include <string>
 #include <string_view>
 
+#include "raylib-cpp.hpp"
 #include "toml.hpp"
 
 #include "enum_list.hpp"
@@ -72,8 +74,8 @@ class Config {
     static constexpr std::string_view ROOT_SV{PROJECT_ROOT_PATH};
 
     // Config boundary values
-    static constexpr int WINDOW_SIZE_MIN = 64;
-    static constexpr int WINDOW_SIZE_MAX = 16384;
+    static constexpr int WINDOW_SIZE_MIN = 400;
+    static constexpr int WINDOW_SIZE_MAX = 6000;
     static constexpr int WINDOW_FPS_MIN = 1;
     static constexpr int WINDOW_FPS_MAX = 1000;
     static constexpr int RENDER_BASE_ITER_MIN = 1;

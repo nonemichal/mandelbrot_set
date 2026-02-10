@@ -1,16 +1,5 @@
 #include "app.hpp"
 
-#include <cmath>
-#include <string_view>
-
-#include "raylib-cpp.hpp"
-#include "raylib.h"
-
-#include "RenderTexture.hpp"
-#include "Window.hpp"
-#include "config.hpp"
-#include "mandelbrot_error.hpp"
-
 std::expected<App *, MandelbrotError>
 App::Instance(const std::string &title, std::string_view config_file) {
     static std::optional<App> instance;
@@ -54,8 +43,15 @@ App::App(const std::string &title, const Config &config)
              title),  // NOTE: Raylib window requires title as string
       shader(config.GetShaderPath(Config::ShaderType::Vertex),
              config.GetShaderPath(Config::ShaderType::Fragment)),
+      // NOTE: The shader is designed to work best with a 7:5 (width/height)
+      // aspect ratio. Assuming the screen itself has a ~7:6 ratio, limiting
+      // the render height to 5/6 of the window keeps the shader rendering
+      // area close to 7:5. The remaining space is reserved for UI elements.
+      render_width(static_cast<std::size_t>(window.GetWidth())),
+      render_height(static_cast<std::size_t>(window.GetHeight() * 5 / 6)),
       base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)),
-      bailout_power(config.GetRenderValue(Config::RenderOption::BailoutPower)) {
+      bailout_power(config.GetRenderValue(Config::RenderOption::BailoutPower)),
+      ui(config) {
     window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
@@ -63,8 +59,8 @@ App::App(const std::string &title, const Config &config)
     // Do not represent full screen coordinates (space where want to apply
     // shader)"
     // https://github.com/raysan5/raylib/blob/master/examples/shaders/shaders_mandelbrot_set.c#L190
-    render_texture =
-        raylib::RenderTexture::Load(window.GetWidth(), window.GetHeight());
+    render_texture = raylib::RenderTexture::Load(
+        static_cast<int>(render_width), static_cast<int>(render_height));
     texture = render_texture.GetTexture();
 
     // Prepare color palette scaled to [0, 255]
@@ -96,21 +92,22 @@ void App::Run() {
 void App::PrepareTexture() {
     render_texture.BeginMode();
     window.ClearBackground(BLACK);
-    const auto width_float = static_cast<float>(window.GetWidth());
-    const auto height_float = static_cast<float>(window.GetHeight());
+    const auto width_float = static_cast<float>(render_width);
+    const auto height_float = static_cast<float>(render_height);
     static const raylib::Rectangle rectangle(0, 0, width_float, height_float);
     rectangle.Draw(BLACK);
     render_texture.EndMode();
 }
 
 void App::RenderShader() {
-    shader.BeginMode();
-    shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
     constexpr float zoom = 1.0;
     constexpr bool scale_iter = true;
     // Update max iter based on base iter and current zoom
     const int max_iter =
-        static_cast<int>(static_cast<float>(base_iter) * (1 + std::log(zoom)));
+        static_cast<int>(static_cast<float>(base_iter) * std::pow(zoom, 0.1));
+    shader.BeginMode();
+    shader.SetValue(shader.GetLocation("uColorPalette"), palette_texture);
+
     shader.SetValue(shader.GetLocation("zoom"), &zoom, SHADER_UNIFORM_FLOAT);
     shader.SetValue(shader.GetLocation("maxIter"), &max_iter,
                     SHADER_UNIFORM_INT);
@@ -120,17 +117,17 @@ void App::RenderShader() {
                     SHADER_UNIFORM_INT);
     shader.SetValue(shader.GetLocation("scaleIter"), &scale_iter,
                     SHADER_UNIFORM_INT);
-    static const raylib::Vector2 pos{0.0, 0.0};
-    texture.Draw(pos);
+    texture.Draw();
     shader.EndMode();
 }
 
 // Draw the saved texture and render shaders
 void App::Draw() {
     window.BeginDrawing();
-    window.ClearBackground(BLACK);
+    window.ClearBackground(UI::BACKGROUND_COLOR);
     RenderShader();
     ui.Update();
+    // Update values from UI
     base_iter = static_cast<int>(ui.GetBaseIterVal());
     bailout_power = static_cast<int>(ui.GetBailoutPowerVal());
     window.EndDrawing();

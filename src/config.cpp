@@ -1,16 +1,5 @@
 #include "config.hpp"
 
-#include <array>
-#include <expected>
-#include <format>
-#include <string>
-#include <string_view>
-
-#include "raylib-cpp.hpp"
-#include "toml.hpp"
-
-#include "mandelbrot_error.hpp"
-
 // Loads the configuration file
 std::expected<Config, MandelbrotError>
 Config::Load(const std::filesystem::path &config_path) {
