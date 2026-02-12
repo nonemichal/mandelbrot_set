@@ -80,6 +80,8 @@ class Config {
     static constexpr int WINDOW_FPS_MAX = 1000;
     static constexpr int RENDER_BASE_ITER_MIN = 1;
     static constexpr int RENDER_BASE_ITER_MAX = 500;
+    static constexpr float RENDER_COLOR_DETAIL_MIN = 0.1F;
+    static constexpr float RENDER_COLOR_DETAIL_MAX = 10.0F;
     static constexpr int RENDER_BAILOUT_POWER_MIN = 2;
     static constexpr int RENDER_BAILOUT_POWER_MAX = 30;
     static constexpr std::size_t COLOR_PALETTE_SIZE = 1024;

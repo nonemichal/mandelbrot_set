@@ -53,7 +53,8 @@ App::App(const std::string &title, const Config &config)
       render_height(static_cast<std::size_t>(window.GetHeight() * 5 / 6)),
       base_iter(config.GetRenderValue(Config::RenderOption::BaseIter)),
       bailout_power(config.GetRenderValue(Config::RenderOption::BailoutPower)),
-      full_color_palette(ui.GetFullColorPaletteValue()) {
+      use_smoothing(ui.GetUseSmoothingValue()),
+      use_color_boost(ui.GetUseColorBoostValue()) {
     window.SetTargetFPS(fps);
     // Create a texture to be used for render
     // NOTE: "Rectangle uses font white character texture coordinates,
@@ -119,7 +120,9 @@ void App::RenderShader() {
                     SHADER_UNIFORM_INT);
     shader.SetValue(shader.GetLocation("paletteSize"),
                     &Config::COLOR_PALETTE_SIZE, SHADER_UNIFORM_INT);
-    shader.SetValue(shader.GetLocation("fullColorPalette"), &full_color_palette,
+    shader.SetValue(shader.GetLocation("useSmoothing"), &use_smoothing,
+                    SHADER_UNIFORM_INT);
+    shader.SetValue(shader.GetLocation("useColorBoost"), &use_color_boost,
                     SHADER_UNIFORM_INT);
     texture.Draw();
     shader.EndMode();
@@ -135,6 +138,7 @@ void App::Draw() {
     base_iter = static_cast<int>(ui.GetBaseIterValue());
     bailout_power = static_cast<int>(ui.GetBailoutPowerValue());
     color_detail = ui.GetColorDetailValue();
-    full_color_palette = ui.GetFullColorPaletteValue();
+    use_smoothing = static_cast<int>(ui.GetUseSmoothingValue());
+    use_color_boost = static_cast<int>(ui.GetUseColorBoostValue());
     window.EndDrawing();
 }

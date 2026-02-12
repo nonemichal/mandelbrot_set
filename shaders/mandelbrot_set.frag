@@ -1,18 +1,17 @@
 #version 330
 
-// Pixel coordinates in [0.0, 1.0]
-in vec2 fragTexCoord;
-// Output color
-out vec4 fragColor;
-// Color palette
-uniform sampler2D uColorPalette;
+in vec2 fragTexCoord; // Pixel coordinates in [0.0, 1.0]
 
-uniform float zoom; // Zoom value
-uniform int maxIter; // Max iteration value
-uniform int bailoutPower; // Escape value is 2^(bailoutPower)
-uniform float colorDetail;
-uniform int paletteSize; // Color palette size
-uniform bool fullColorPalette; // Should iteration value be scaled based on color palette size
+out vec4 fragColor; // Output color
+
+uniform sampler2D uColorPalette; // Color palette
+uniform int maxIter; // Maximum number of iterations per point
+uniform int bailoutPower; // Escape radius 2^bailoutPower
+uniform int paletteSize; // Number of colors in the palette texture
+uniform float colorDetail; // Multiplier controlling palette cycling
+uniform float zoom; // Zoom factor
+uniform int useSmoothing; // Smooth iteration count for gradient coloring
+uniform int useColorBoost; // true = continuous palette, false = index-based palette
 
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
@@ -23,9 +22,11 @@ const float maxY = 1.25;
 // X scaled to [-2.5, 1.0]
 const float minX = -2.5;
 const float maxX = 1.0;
+// Bool values
+bool useSmoothingBool = bool(useSmoothing);
+bool useColorBoostBool = bool(useColorBoost);
 
 void main() {
-
   // f_c(z) = z^2 + c
   vec2 c = vec2(
       mix(minX, maxX, fragTexCoord.x),
@@ -44,34 +45,51 @@ void main() {
     iter++;
   }
 
-  // Avoid floating point issues
-  float logZn = log(z.x * z.x + z.y * z.y) / 2.0;
-  float nu = log(logZn / log(2.0)) / log(2.0);
-  float fixedIter = float(iter) + 1.0 - nu;
+  // Iter value as float
+  float iterFloat;
 
-  int indexVal; // Color palette index
-  if (fullColorPalette) {
-    // Scale iter value based on palette size
-    float t = fixedIter / float(maxIter);
-    int paletteIter = int(floor(t * paletteSize));
-    indexVal = paletteIter;
+  // Smooth iteration count
+  if (useSmoothingBool) {
+    float logZn = log(z.x * z.x + z.y * z.y) / 2.0;
+    float nu = log(logZn / log(2.0)) / log(2.0);
+    iterFloat = float(iter) + 1.0 - nu;
   } else {
-    // Use not scaled value
-    indexVal = int(floor(fixedIter));
+    iterFloat = float(iter);
   }
 
-  // Two nearest palette indices provides gradient
-  int index1 = indexVal;
-  int index2 = min(index1 + 1, paletteSize - 1);
+  // Handle points inside the set
+  if (iter == maxIter) {
+    fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    return;
+  }
 
-  float u1 = mod(float(index1) * colorDetail, float(paletteSize)) / float(paletteSize);
-  float u2 = mod(float(index2) * colorDetail, float(paletteSize)) / float(paletteSize);
+  // Output color
+  vec3 color;
 
-  vec3 color1 = texture(uColorPalette, vec2(u1, 0.5)).rgb;
-  vec3 color2 = texture(uColorPalette, vec2(u2, 0.5)).rgb;
+  // Map iterations to palette coordinate
+  if (useColorBoostBool) {
+    // Normalize iteration count to palette range
+    float u = iterFloat / float(maxIter);
+    u = fract(u * colorDetail); // Apply colorDetail multiplier and wrap around
+    color = texture(uColorPalette, vec2(u, 0.5)).rgb;
+  } else {
+    // Use discrete indices with interpolation
+    int indexVal = int(floor(iterFloat));
+    int index1 = indexVal;
+    int index2 = min(index1 + 1, paletteSize - 1);
 
-  // Interpolate color
-  float frac = fixedIter - floor(fixedIter);
-  vec3 color = mix(color1, color2, frac);
-  fragColor = vec4(color, 1.0); // Output color
+    // Map to texture coord
+    float u1 = mod(float(index1) * colorDetail, float(paletteSize)) / float(paletteSize);
+    float u2 = mod(float(index2) * colorDetail, float(paletteSize)) / float(paletteSize);
+
+    // Sample colors
+    vec3 color1 = texture(uColorPalette, vec2(u1, 0.5)).rgb;
+    vec3 color2 = texture(uColorPalette, vec2(u2, 0.5)).rgb;
+
+    float frac = fract(iterFloat);
+    color = mix(color1, color2, frac);
+  }
+
+  // Output final fragment color
+  fragColor = vec4(color, 1.0);
 }

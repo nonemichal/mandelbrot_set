@@ -50,8 +50,10 @@ class App {
     std::size_t render_height;
     int base_iter;
     int bailout_power;
-    float color_detail = 1.0F;
-    bool full_color_palette;
+    float color_detail;  // Default value (no change)
+    // NOTE: Raylib does not support a bool uniform
+    int use_smoothing;
+    int use_color_boost;
 
     // Color palette
     const std::array<RGB, Config::COLOR_PALETTE_SIZE> GENERATED_PALETTE{

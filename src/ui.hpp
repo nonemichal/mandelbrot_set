@@ -25,7 +25,8 @@ class UI {
     [[nodiscard]] float GetBaseIterValue() const;
     [[nodiscard]] float GetBailoutPowerValue() const;
     [[nodiscard]] float GetColorDetailValue() const;
-    [[nodiscard]] bool GetFullColorPaletteValue() const;
+    [[nodiscard]] bool GetUseSmoothingValue() const;
+    [[nodiscard]] bool GetUseColorBoostValue() const;
 
   private:
     std::size_t screen_width;
@@ -50,10 +51,15 @@ class UI {
     Rectangle bailout_power_bounds;
     Slider bailtout_power_slider;
 
-    // Full color palette check box
-    bool full_color_palette_val = false;  // Defaultly false
-    Rectangle full_color_palette_bounds;
-    Checkbox full_color_palette_checkbox;
+    // Iteration smoothing check box
+    bool use_smoothing_val = false;
+    Rectangle use_smoothing_bounds;
+    Checkbox use_smoothing_checkbox;
+
+    // Continuous palette check box
+    bool use_color_boost_val = false;
+    Rectangle use_color_boost_bounds;
+    Checkbox use_color_boost_checkbox;
 
     [[nodiscard]] std::size_t CalculateSliderWidth() const;
     [[nodiscard]] std::size_t CalculateSliderHeight() const;
