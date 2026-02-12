@@ -50,13 +50,13 @@ class App {
     std::size_t render_height;
     int base_iter;
     int bailout_power;
+    float color_detail = 1.0F;
     bool full_color_palette;
 
     // Color palette
-    static constexpr std::size_t PALETTE_SIZE = 1024;
-    const std::array<RGB, PALETTE_SIZE> GENERATED_PALETTE{
-        RGB::GenPaletteLCH<PALETTE_SIZE>()};
-    std::array<raylib::Color, PALETTE_SIZE> color_palette;
+    const std::array<RGB, Config::COLOR_PALETTE_SIZE> GENERATED_PALETTE{
+        RGB::GenPaletteLCH<Config::COLOR_PALETTE_SIZE>()};
+    std::array<raylib::Color, Config::COLOR_PALETTE_SIZE> color_palette;
     raylib::Texture palette_texture;
 
     void PrepareTexture();

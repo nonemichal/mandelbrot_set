@@ -10,8 +10,9 @@ uniform sampler2D uColorPalette;
 uniform float zoom; // Zoom value
 uniform int maxIter; // Max iteration value
 uniform int bailoutPower; // Escape value is 2^(bailoutPower)
+uniform float colorDetail;
 uniform int paletteSize; // Color palette size
-uniform bool scaleIter; // Should iteration value be scaled based on color palette size
+uniform bool fullColorPalette; // Should iteration value be scaled based on color palette size
 
 // Source: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 
@@ -49,7 +50,7 @@ void main() {
   float fixedIter = float(iter) + 1.0 - nu;
 
   int indexVal; // Color palette index
-  if (scaleIter) {
+  if (fullColorPalette) {
     // Scale iter value based on palette size
     float t = fixedIter / float(maxIter);
     int paletteIter = int(floor(t * paletteSize));
@@ -61,11 +62,13 @@ void main() {
 
   // Two nearest palette indices provides gradient
   int index1 = indexVal;
-  int index2 = min(index1 + 1, maxIter);
+  int index2 = min(index1 + 1, paletteSize - 1);
 
-  // Fetch colors
-  vec3 color1 = texture(uColorPalette, vec2(float(index1) / float(maxIter), 0.5)).rgb;
-  vec3 color2 = texture(uColorPalette, vec2(float(index2) / float(maxIter), 0.5)).rgb;
+  float u1 = mod(float(index1) * colorDetail, float(paletteSize)) / float(paletteSize);
+  float u2 = mod(float(index2) * colorDetail, float(paletteSize)) / float(paletteSize);
+
+  vec3 color1 = texture(uColorPalette, vec2(u1, 0.5)).rgb;
+  vec3 color2 = texture(uColorPalette, vec2(u2, 0.5)).rgb;
 
   // Interpolate color
   float frac = fixedIter - floor(fixedIter);

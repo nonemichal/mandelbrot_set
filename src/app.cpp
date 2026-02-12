@@ -67,7 +67,7 @@ App::App(const std::string &title, const Config &config)
 
     // Prepare color palette scaled to [0, 255]
     static constexpr unsigned char color_max_value = 255;
-    for (size_t i = 0; i < PALETTE_SIZE; ++i) {
+    for (size_t i = 0; i < Config::COLOR_PALETTE_SIZE; ++i) {
         color_palette.at(i) =
             Color{static_cast<unsigned char>(GENERATED_PALETTE.at(i).r *
                                              color_max_value),
@@ -77,8 +77,9 @@ App::App(const std::string &title, const Config &config)
                                              color_max_value),
                   color_max_value};
     }
-    Image palette_image(color_palette.data(), static_cast<int>(PALETTE_SIZE), 1,
-                        1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+    Image palette_image(color_palette.data(),
+                        static_cast<int>(Config::COLOR_PALETTE_SIZE), 1, 1,
+                        PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
     palette_texture = raylib::Texture(palette_image);
 }
 
@@ -112,11 +113,13 @@ void App::RenderShader() {
     shader.SetValue(shader.GetLocation("zoom"), &zoom, SHADER_UNIFORM_FLOAT);
     shader.SetValue(shader.GetLocation("maxIter"), &max_iter,
                     SHADER_UNIFORM_INT);
+    shader.SetValue(shader.GetLocation("colorDetail"), &color_detail,
+                    SHADER_UNIFORM_FLOAT);
     shader.SetValue(shader.GetLocation("bailoutPower"), &bailout_power,
                     SHADER_UNIFORM_INT);
-    shader.SetValue(shader.GetLocation("paletteSize"), &PALETTE_SIZE,
-                    SHADER_UNIFORM_INT);
-    shader.SetValue(shader.GetLocation("scaleIter"), &full_color_palette,
+    shader.SetValue(shader.GetLocation("paletteSize"),
+                    &Config::COLOR_PALETTE_SIZE, SHADER_UNIFORM_INT);
+    shader.SetValue(shader.GetLocation("fullColorPalette"), &full_color_palette,
                     SHADER_UNIFORM_INT);
     texture.Draw();
     shader.EndMode();
@@ -131,6 +134,7 @@ void App::Draw() {
     // Update values from UI
     base_iter = static_cast<int>(ui.GetBaseIterValue());
     bailout_power = static_cast<int>(ui.GetBailoutPowerValue());
+    color_detail = ui.GetColorDetailValue();
     full_color_palette = ui.GetFullColorPaletteValue();
     window.EndDrawing();
 }

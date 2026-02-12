@@ -26,17 +26,6 @@ struct Slider {
         GuiSlider(bounds, text.c_str(),
                   TextFormat("%i", static_cast<int>(*value_ptr)), value_ptr,
                   min_value, max_value);
-
-        // Round the value to nearest even number
-        int value_int = static_cast<int>(*value_ptr);
-        int value_even = (value_int % 2 == 0) ? value_int : value_int + 1;
-
-        // Clamp the even value within min/max
-        value_even = std::min(value_even, static_cast<int>(max_value));
-        value_even = std::max(value_even, static_cast<int>(min_value));
-
-        // Update value
-        *value_ptr = static_cast<float>(value_even);
     }
 
     [[nodiscard]] Rectangle GetBounds() const { return bounds; }

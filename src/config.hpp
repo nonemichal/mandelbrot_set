@@ -82,6 +82,7 @@ class Config {
     static constexpr int RENDER_BASE_ITER_MAX = 500;
     static constexpr int RENDER_BAILOUT_POWER_MIN = 2;
     static constexpr int RENDER_BAILOUT_POWER_MAX = 30;
+    static constexpr std::size_t COLOR_PALETTE_SIZE = 1024;
 
     // Loads the configuration file
     [[nodiscard]] static std::expected<Config, MandelbrotError>

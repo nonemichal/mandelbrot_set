@@ -19,12 +19,13 @@ class UI {
     explicit UI(const Config &config);
     void Update();
 
+    static constexpr Color BACKGROUND_COLOR = {25, 25, 25, 255};
+
     [[nodiscard]] std::size_t GetFontSize() const;
     [[nodiscard]] float GetBaseIterValue() const;
     [[nodiscard]] float GetBailoutPowerValue() const;
+    [[nodiscard]] float GetColorDetailValue() const;
     [[nodiscard]] bool GetFullColorPaletteValue() const;
-
-    static constexpr Color BACKGROUND_COLOR = {25, 25, 25, 255};
 
   private:
     std::size_t screen_width;
@@ -39,6 +40,11 @@ class UI {
     Rectangle base_iter_bounds;
     Slider base_iter_slider;
 
+    // Color cycling speed value
+    float color_detail_value;
+    Rectangle color_detail_bounds;
+    Slider color_detail_slider;
+
     // Bailout power slider
     float bailout_power_val;
     Rectangle bailout_power_bounds;
@@ -48,4 +54,10 @@ class UI {
     bool full_color_palette_val = false;  // Defaultly false
     Rectangle full_color_palette_bounds;
     Checkbox full_color_palette_checkbox;
+
+    [[nodiscard]] std::size_t CalculateSliderWidth() const;
+    [[nodiscard]] std::size_t CalculateSliderHeight() const;
+    [[nodiscard]] std::size_t CalculateCheckboxWidth() const;
+    [[nodiscard]] std::size_t CalculateCheckboxHeight() const;
+    [[nodiscard]] std::size_t CalculateVerticalMargin() const;
 };
